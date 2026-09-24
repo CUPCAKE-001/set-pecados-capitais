@@ -6,11 +6,20 @@
   <title>Reflexão e Apoio - Os 7 Pecados Capitais</title>
   <style>
     :root {
-      --bg-color: #0f0f12;
-      --card-bg: #1a1a24;
-      --accent-color: #ff4757;
-      --text-color: #e1e1e6;
-      --text-muted: #a8a8b3;
+      --bg-color: #0b0c10;
+      --card-bg: #1f2833;
+      --card-border: #2c3540;
+      --accent-color: #66fcf1;
+      --text-color: #edf5e1;
+      --text-muted: #c5c6c7;
+      
+      --color-pride: #a855f7;
+      --color-greed: #eab308;
+      --color-lust: #ec4899;
+      --color-envy: #22c55e;
+      --color-gluttony: #f97316;
+      --color-wrath: #ef4444;
+      --color-sloth: #3b82f6;
     }
 
     * {
@@ -26,43 +35,70 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 20px;
+      padding: 20px 15px;
       min-height: 100vh;
     }
 
     header {
       text-align: center;
-      margin-bottom: 30px;
+      margin-bottom: 25px;
+      max-width: 750px;
     }
 
     header h1 {
-      font-size: 2.2rem;
-      color: var(--accent-color);
+      font-size: 2.3rem;
+      color: var(--text-color);
       margin-bottom: 10px;
       letter-spacing: 2px;
+      text-transform: uppercase;
     }
 
     header p {
       color: var(--text-muted);
-      max-width: 600px;
+      font-size: 1rem;
+      line-height: 1.5;
     }
 
-    .grid-container {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-      gap: 15px;
+    /* Barra de Pesquisa */
+    .search-container {
       width: 100%;
       max-width: 800px;
-      margin-bottom: 30px;
+      margin-bottom: 20px;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 15px 20px;
+      border-radius: 30px;
+      border: 2px solid var(--card-border);
+      background-color: var(--card-bg);
+      color: var(--text-color);
+      font-size: 1rem;
+      outline: none;
+      transition: border-color 0.3s;
+    }
+
+    .search-input:focus {
+      border-color: var(--accent-color);
+    }
+
+    /* Grade dos 7 Pecados */
+    .grid-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(125px, 1fr));
+      gap: 10px;
+      width: 100%;
+      max-width: 800px;
+      margin-bottom: 25px;
     }
 
     .sin-btn {
       background-color: var(--card-bg);
-      border: 2px solid #2d2d3a;
+      border: 2px solid var(--card-border);
       border-radius: 12px;
-      padding: 20px 10px;
+      padding: 16px 8px;
       color: var(--text-color);
-      font-size: 1.1rem;
+      font-size: 0.95rem;
       font-weight: bold;
       cursor: pointer;
       transition: all 0.3s ease;
@@ -70,171 +106,448 @@
     }
 
     .sin-btn:hover {
-      border-color: var(--accent-color);
       transform: translateY(-3px);
-      box-shadow: 0 5px 15px rgba(255, 71, 87, 0.2);
+      box-shadow: 0 6px 15px rgba(0,0,0,0.4);
     }
 
+    .sin-btn[data-sin="pride"]:hover { border-color: var(--color-pride); color: var(--color-pride); }
+    .sin-btn[data-sin="greed"]:hover { border-color: var(--color-greed); color: var(--color-greed); }
+    .sin-btn[data-sin="lust"]:hover { border-color: var(--color-lust); color: var(--color-lust); }
+    .sin-btn[data-sin="envy"]:hover { border-color: var(--color-envy); color: var(--color-envy); }
+    .sin-btn[data-sin="gluttony"]:hover { border-color: var(--color-gluttony); color: var(--color-gluttony); }
+    .sin-btn[data-sin="wrath"]:hover { border-color: var(--color-wrath); color: var(--color-wrath); }
+    .sin-btn[data-sin="sloth"]:hover { border-color: var(--color-sloth); color: var(--color-sloth); }
+
+    /* Área de Conteúdo Dinâmico */
     .content-area {
       width: 100%;
       max-width: 800px;
       background-color: var(--card-bg);
-      border-radius: 12px;
+      border-radius: 16px;
       padding: 25px;
       display: none;
-      border: 1px solid #2d2d3a;
+      border: 1px solid var(--card-border);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+      animation: fadeIn 0.4s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     .content-area h2 {
-      color: var(--accent-color);
-      margin-bottom: 15px;
-      font-size: 1.5rem;
+      font-size: 1.8rem;
+      margin-bottom: 12px;
     }
 
     .sub-options {
       display: flex;
       flex-direction: column;
       gap: 10px;
-      margin-bottom: 20px;
+      margin: 20px 0;
     }
 
     .sub-btn {
-      background-color: #262636;
-      border: 1px solid #3d3d52;
+      background-color: #121921;
+      border: 1px solid var(--card-border);
       color: var(--text-color);
-      padding: 12px 15px;
-      border-radius: 8px;
+      padding: 14px 18px;
+      border-radius: 10px;
       cursor: pointer;
       text-align: left;
-      transition: background-color 0.2s;
+      font-size: 0.95rem;
+      line-height: 1.4;
+      transition: all 0.2s;
     }
 
     .sub-btn:hover {
-      background-color: #323247;
+      background-color: #1a232e;
+      border-color: var(--accent-color);
     }
 
+    /* Caixa de Resultados */
     .result-box {
-      margin-top: 20px;
-      padding: 20px;
-      background-color: #12121a;
-      border-left: 4px solid var(--accent-color);
-      border-radius: 4px;
+      margin-top: 25px;
+      padding: 22px;
+      background-color: #0d131a;
+      border-left: 5px solid var(--accent-color);
+      border-radius: 8px;
       display: none;
+      animation: fadeIn 0.3s ease;
     }
 
-    .result-box h3 {
-      margin-bottom: 10px;
-      font-size: 1.1rem;
+    .result-section {
+      margin-bottom: 18px;
     }
 
-    .result-box p {
+    .result-section:last-child {
+      margin-bottom: 0;
+    }
+
+    .result-section h3 {
+      color: var(--accent-color);
+      margin-bottom: 6px;
+      font-size: 1.05rem;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+    }
+
+    .result-section p {
       line-height: 1.6;
       color: var(--text-muted);
+    }
+
+    /* Bloco do Diário */
+    .journal-section {
+      width: 100%;
+      max-width: 800px;
+      margin-top: 35px;
+      background-color: var(--card-bg);
+      border-radius: 16px;
+      padding: 25px;
+      border: 1px solid var(--card-border);
+    }
+
+    .journal-section h3 {
+      margin-bottom: 8px;
+      color: var(--text-color);
+    }
+
+    .journal-section p {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin-bottom: 15px;
+    }
+
+    textarea {
+      width: 100%;
+      height: 110px;
+      background-color: #121921;
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      padding: 12px;
+      color: var(--text-color);
+      font-size: 0.95rem;
+      resize: vertical;
+      outline: none;
+    }
+
+    textarea:focus {
+      border-color: var(--accent-color);
+    }
+
+    .save-btn {
+      margin-top: 10px;
+      background-color: var(--accent-color);
+      color: #0b0c10;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 20px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+
+    .save-btn:hover {
+      opacity: 0.9;
+    }
+
+    footer {
+      margin-top: 40px;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.85rem;
     }
   </style>
 </head>
 <body>
 
   <header>
-    <h1>7 PECADOS CAPITAIS</h1>
-    <p>Selecione de forma totalmente anônima a área em que você busca orientação ou suporte moral/espiritual hoje.</p>
+    <h1>Reflexão dos 7 Pecados Capitais</h1>
+    <p>Escolha um pecado ou digite na busca a situação que você viveu de forma 100% anônima para receber direcionamento, passagens e conselhos práticos.</p>
   </header>
+
+  <!-- Barra de Pesquisa Rápida -->
+  <div class="search-container">
+    <input type="text" id="searchInput" class="search-input" placeholder="🔍 Digite uma palavra ou situação (ex: raiva, rede social, trabalho, comida, dinheiro)..." oninput="filterContent()">
+  </div>
 
   <!-- Grade dos 7 Pecados Capitais -->
   <div class="grid-container">
-    <button class="sin-btn" onclick="selectSin('pride')">1. Orgulho</button>
-    <button class="sin-btn" onclick="selectSin('greed')">2. Ganância</button>
-    <button class="sin-btn" onclick="selectSin('lust')">3. Luxúria</button>
-    <button class="sin-btn" onclick="selectSin('envy')">4. Inveja</button>
-    <button class="sin-btn" onclick="selectSin('gluttony')">5. Gula</button>
-    <button class="sin-btn" onclick="selectSin('wrath')">6. Ira</button>
-    <button class="sin-btn" onclick="selectSin('sloth')">7. Preguiça</button>
+    <button class="sin-btn" data-sin="pride" onclick="selectSin('pride')">👑 Orgulho</button>
+    <button class="sin-btn" data-sin="greed" onclick="selectSin('greed')">💰 Ganância</button>
+    <button class="sin-btn" data-sin="lust" onclick="selectSin('lust')">❤️ Luxúria</button>
+    <button class="sin-btn" data-sin="envy" onclick="selectSin('envy')">👁️ Inveja</button>
+    <button class="sin-btn" data-sin="gluttony" onclick="selectSin('gluttony')">🍷 Gula</button>
+    <button class="sin-btn" data-sin="wrath" onclick="selectSin('wrath')">🔥 Ira</button>
+    <button class="sin-btn" data-sin="sloth" onclick="selectSin('sloth')">🕸️ Preguiça</button>
   </div>
 
   <!-- Área de Exibição Dinâmica -->
   <div id="contentArea" class="content-area">
     <h2 id="sinTitle">Título</h2>
-    <p style="margin-bottom: 15px; color: var(--text-muted);">Qual destas situações melhor descreve o que você sentiu ou cometeu?</p>
+    <p style="color: var(--text-muted);">Clique na situação que descreve o que você sentiu ou fez:</p>
     
     <div id="subOptions" class="sub-options"></div>
 
     <div id="resultBox" class="result-box">
-      <h3>Passagem / Reflexão Recomendada:</h3>
-      <p id="resultText"></p>
+      <div class="result-section">
+        <h3>📖 Passagem Bíblica / Reflexiva</h3>
+        <p id="resPassage"></p>
+      </div>
+      <div class="result-section">
+        <h3>🌱 Virtude Oposta a Praticar</h3>
+        <p id="resVirtue"></p>
+      </div>
+      <div class="result-section">
+        <h3>💡 Conselho Prático</h3>
+        <p id="resAdvice"></p>
+      </div>
+      <div class="result-section">
+        <h3>❓ Pergunta para Autoexame</h3>
+        <p id="resQuestion"></p>
+      </div>
+      <div class="result-section">
+        <h3>🧘 Ação Imprópria / Exercício Mental</h3>
+        <p id="resAction"></p>
+      </div>
     </div>
   </div>
 
+  <!-- Bloco do Diário -->
+  <div class="journal-section">
+    <h3>📝 Espaço de Reflexão Privado</h3>
+    <p>Escreva aqui um desabafo ou compromisso. Este texto é <strong>salvo exclusivamente no seu dispositivo/navegador</strong> e ninguém mais na internet tem acesso.</p>
+    <textarea id="journalText" placeholder="Escreva o que está no seu coração..."></textarea>
+    <button class="save-btn" onclick="saveJournal()">Salvar Nota Privada</button>
+  </div>
+
+  <footer>
+    <p>Projeto de reflexão sem fins lucrativos e totalmente anônimo.</p>
+  </footer>
+
   <script>
-    // Base de dados com as opções e passagens reflexivas
     const database = {
       pride: {
-        title: "Orgulho (Pride)",
+        title: "👑 Orgulho (Pride)",
+        color: "var(--color-pride)",
         options: [
           {
-            text: "Achei que era superior aos outros ou tive vergonha de pedir ajuda.",
-            passage: "“O orgulho vem antes da destruição, e o espírito altivo antes da queda.” — Provérbios 16:18. Lembre-se de que reconhecer a própria vulnerabilidade é um ato de coragem, não de fraqueza."
+            text: "Senti vergonha de pedir ajuda ou admitir que não sei algo.",
+            passage: "“O orgulho vem antes da destruição, e o espírito altivo antes da queda.” — Provérbios 16:18",
+            virtue: "Humildade e vulnerabilidade.",
+            advice: "Pedir ajuda demonstra inteligência e coragem, não fraqueza. Ninguém constrói nada sozinho.",
+            question: "O que eu temo que as pessoas pensem de mim se eu admitir que preciso de ajuda?",
+            action: "Peça conselho ou ajuda a alguém de confiança hoje em algo simples."
           },
           {
-            text: "Não consegui admitir que estava errado em uma discussão.",
-            passage: "“A resposta branda desvia o furor, mas a palavra dura suscita a ira.” — Provérbios 15:1. Admitir um erro demonstra maturidade e preserva relacionamentos."
+            text: "Não consegui reconhecer meu erro em uma discussão com amigo ou familiar.",
+            passage: "“A resposta branda desvia o furor, mas a palavra dura suscita a ira.” — Provérbios 15:1",
+            virtue: "Manseridat e reconhecimento da verdade.",
+            advice: "Ganhar um argumento destruindo um relacionamento é uma vitória falsa.",
+            question: "Eu prefiro ter razão ou ter paz e manter quem eu amo?",
+            action: "Procure a pessoa e diga: 'Refleti melhor e percebi que errei naquela conversa'."
+          },
+          {
+            text: "Postei algo ou ostentei só para me sentir superior aos outros.",
+            passage: "“Nada façam por ambição egoísta ou vaidade, mas humildemente considerem os outros superiores a vocês mesmos.” — Filipenses 2:3",
+            virtue: "Simplicidade e modéstia.",
+            advice: "O aplauso público não preenche o vazio interno. Busque aprovação por quem você é por dentro.",
+            question: "Estou buscando validação externa porque falta paz dentro de mim?",
+            action: "Passe 24 horas sem postar nada sobre suas conquistas nas redes sociais."
+          },
+          {
+            text: "Senti desdém ou desprezei alguém por sua condição social, escolaridade ou aparência.",
+            passage: "“Quem zomba do pobre mostra desprezo pelo Criador dele.” — Provérbios 17:5",
+            virtue: "Respeito e fraternidade.",
+            advice: "Circunstâncias mudam. O valor de uma pessoa não está no que ela possui ou sabe.",
+            question: "Como eu me sentiria se estivesse no lugar daquela pessoa hoje?",
+            action: "Trate com atenção e carinho alguém que você normalmente ignoraria."
+          },
+          {
+            text: "Fiquei melindrado ou com raiva ao receber uma crítica construtiva.",
+            passage: "“O caminho do insensato parece-lhe justo, mas o sábio ouve os conselhos.” — Provérbios 12:15",
+            virtue: "Docilidade e desejo de aprender.",
+            advice: "Críticas maduras são oportunidades gratuitas de evolução.",
+            question: "Estou confundindo uma crítica ao meu trabalho com um ataque à minha pessoa?",
+            action: "Agradeça a quem te fez a crítica e reflita de forma neutra sobre o que pode melhorar."
           }
         ]
       },
       greed: {
-        title: "Ganância (Greed)",
+        title: "💰 Ganância (Greed)",
+        color: "var(--color-greed)",
         options: [
           {
-            text: "Desejei ter mais do que o necessário, mesmo prejudicando alguém.",
-            passage: "“A vida de um homem não consiste na abundância dos bens que possui.” — Lucas 12:15. A verdadeira riqueza está na paz de espírito e nas conexões humanas."
+            text: "Gastei mais do que podia comprando coisas desnecessárias por impulso.",
+            passage: "“A vida de um homem não consiste na abundância dos bens que possui.” — Lucas 12:15",
+            virtue: "Desapego e temperança.",
+            advice: "Comprar não cura ansiedade nem tristeza. A satisfação do consumo dura poucos minutos.",
+            question: "Eu preciso mesmo disso ou estou tentando preencher um sentimento?",
+            action: "Espere 3 dias antes de realizar qualquer compra não essencial."
+          },
+          {
+            text: "Pensei em tirar vantagem financeira de alguém ou de uma empresa de forma desonesta.",
+            passage: "“O ganho obtido com fraude é doce no início, mas no fim a boca se enche de areia.” — Provérbios 20:17",
+            virtue: "Honestidade e integridade.",
+            advice: "O dinheiro ganho sem ética cobra um preço alto na sua paz de espírito e reputação.",
+            question: "Eu gostaria que fizessem esse mesmo tipo de manobra comigo?",
+            action: "Abandone qualquer plano que fira sua consciência moral."
+          },
+          {
+            text: "Sinto um medo constante de faltar dinheiro, mesmo tendo o suficiente para o presente.",
+            passage: "“Não andem ansiosos por coisa alguma... Olhai as aves do céu.” — Mateus 6:26",
+            virtue: "Confiança e gratidão.",
+            advice: "A obsessão por acumular nasce da ilusão de que podemos controlar o futuro com dinheiro.",
+            question: "Estou aproveitando o presente ou apenas acumulando por medo do amanhã?",
+            action: "Escreva 3 coisas que o dinheiro não compra e pelas quais você é muito grato."
+          },
+          {
+            text: "Recusei me a ajudar alguém necessitado ou doar mesmo tendo condições de sobra.",
+            passage: "“Quem é generoso progride; quem rega, também será regado.” — Provérbios 11:25",
+            virtue: "Generosidade e caridade.",
+            advice: "Reter em excesso enrijece o coração. A generosidade traz liberdade interior.",
+            question: "O que me impede de compartilhar um pouco do que tenho?",
+            action: "Faça uma doação (financeira, de roupas ou de alimento) ainda esta semana."
           }
         ]
       },
       lust: {
-        title: "Luxúria (Lust)",
+        title: "❤️ Luxúria (Lust)",
+        color: "var(--color-lust)",
         options: [
           {
-            text: "Olhei ou tratei outra pessoa apenas como um objeto de desejo.",
-            passage: "“Sobretudo o que se deve guardar, guarda o teu coração, porque dele procedem as fontes da vida.” — Provérbios 4:23. Respeitar a dignidade do outro fortalece sua própria integridade."
+            text: "Consumi pornografia ou conteúdos explicitamente eróticos em momentos de tédio ou estresse.",
+            passage: "“Cria em mim, ó Deus, um coração puro e renova dentro de mim um espírito firme.” — Salmos 51:10",
+            virtue: "Pureza mental e autocontrole.",
+            advice: "O cérebro busca atalhos fáceis de dopamina. Reconheça que a pornografia altera a forma como você enxerga as pessoas.",
+            action: "Instale um bloqueador de conteúdo e troque a tela por uma caminhada ou exercício físico quando surgir o impulso."
+          },
+          {
+            text: "Tratei meu parceiro(a) ou outra pessoa como apenas um meio de satisfação sexual.",
+            passage: "“Sobretudo o que se deve guardar, guarda o teu coração.” — Provérbios 4:23",
+            virtue: "Respeito e amor genuíno.",
+            advice: "Relacionamentos duradouros são construídos sobre intimidade emocional, diálogo e respeito mútuo.",
+            question: "Eu enxergo essa pessoa como alguém completo com sentimentos, ou apenas como um desejo?",
+            action: "Tenha uma conversa profunda sobre sentimentos com seu parceiro(a) sem foco em sexo."
+          },
+          {
+            text: "Fiquei fantasiando romanticamente ou sexualmente com uma pessoa comprometida.",
+            passage: "“Não cobiçarás a mulher do teu próximo.” — Êxodo 20:17",
+            virtue: "Fidelidade e consideração ao próximo.",
+            advice: "Alimentar pensamentos fantasiosos desgasta sua energia mental e cria desrespeito pela vida alheia.",
+            question: "Como eu me sentiria se fosse a pessoa traída nessa situação?",
+            action: "Mude o foco imediatamente quando esse pensamento surgir e evite contato desnecessário."
           }
         ]
       },
       envy: {
-        title: "Inveja (Envy)",
+        title: "👁️ Inveja (Envy)",
+        color: "var(--color-envy)",
         options: [
           {
-            text: "Senti mágoa ou raiva ao ver a conquista de outra pessoa.",
-            passage: "“O coração em paz dá vida ao corpo, mas a inveja apodrece os ossos.” — Provérbios 14:30. Celebre o sucesso do próximo para atrair coisas positivas para sua própria jornada."
+            text: "Senti mágoa ou raiva secreta ao saber que um amigo ou colega conquistou algo grande.",
+            passage: "“O coração em paz dá vida ao corpo, mas a inveja apodrece os ossos.” — Provérbios 14:30",
+            virtue: "Benevolência e alegria pelo bem alheio.",
+            advice: "A vitória do outro não diminui sua capacidade de vencer. Há espaço no mundo para todos.",
+            question: "Por que o sucesso de alguém me faz sentir menor?",
+            action: "Envie uma mensagem sincera de parabéns à pessoa que conquistou algo."
           },
           {
-            text: "Comparei minha vida com a de alguém na internet e me senti inferior.",
-            passage: "Cada pessoa tem um tempo e uma história única. Foque no seu próprio progresso diário em vez da vitrine alheia."
+            text: "Comparei minha vida com a vida perfeita de pessoas nas redes sociais e fiquei triste.",
+            passage: "“Cada um examine os seus próprios atos. Ele poderá orgulhar-se de si mesmo, sem se comparar.” — Gálatas 6:4",
+            virtue: "Contentamento e autenticidade.",
+            advice: "Ninguém posta os momentos de choro, boletos atrasados ou brigas. Você está comparando seu bastidor com o palco dos outros.",
+            action: "Faça um detox de redes sociais por 48 horas."
+          },
+          {
+            text: "Tentei diminuir o mérito de alguém dizendo que 'foi sorte' ou 'teve ajuda'.",
+            passage: "“Não julguem, para que vocês não sejam julgados.” — Mateus 7:1",
+            virtue: "Justiça e humildade.",
+            advice: "Diminuir os outros não faz você crescer. Reconhecer o esforço alheio ennobrece sua alma.",
+            question: "Estou usando o julgamento para esconder minha própria falta de iniciativa?",
+            action: "Elogie publicamente o trabalho de alguém esta semana."
           }
         ]
       },
       gluttony: {
-        title: "Gula (Gluttony)",
+        title: "🍷 Gula (Gluttony)",
+        color: "var(--color-gluttony)",
         options: [
           {
-            text: "Busquei no excesso (comida, consumo, hábitos) um alívio para ansiedade.",
-            passage: "Tudo nos é permitido, mas nem tudo nos convém. Buscar o equilíbrio emocional é o primeiro passo para conter excessos."
+            text: "Comi ou bebi em excesso para tentar aliviar ansiedade, tristeza ou solidão.",
+            passage: "“Todas as coisas me são lícitas, mas nem todas as coisas convêm.” — 1 Coríntios 6:12",
+            virtue: "Moderação e autoconhecimento.",
+            advice: "A comida nutre o corpo, mas não cura feridas emocionais. Trate a causa do sentimento, não o sintoma.",
+            question: "Estou com fome física ou com fome de paz e carinho?",
+            action: "Antes de comer impulsivamente, tome um copo de água e espere 10 minutos refletindo sobre o que está sentindo."
+          },
+          {
+            text: "Desperdicei alimentos ou consumi de forma egoísta sem pensar nos outros.",
+            passage: "“Juntem os pedaços que sobraram, para que nada se perca.” — João 6:12",
+            virtue: "Consciência e sobriedade.",
+            advice: "A abundância deve ser acompanhada de responsabilidade e respeito pelo trabalho de quem produz.",
+            action: "Planeje suas refeições para evitar qualquer desperdício durante esta semana."
           }
         ]
       },
       wrath: {
-        title: "Ira (Wrath)",
+        title: "🔥 Ira (Wrath)",
+        color: "var(--color-wrath)",
         options: [
           {
-            text: "Perdi o controle e magoei alguém com palavras de raiva.",
-            passage: "“Refreie a sua ira e abandone o furor; não se separe da paciência.” — Salmos 37:8. Respire fundo antes de redefinir suas atitudes em momentos de tensão."
+            text: "Perdi o controle e gritei ou ofendi gravemente alguém que amo.",
+            passage: "“Refreie a sua ira e abandone o furor; não se separe da paciência.” — Salmos 37:8",
+            virtue: "Paciência e autocontrole.",
+            advice: "Palavras ditas na raiva são como pregos pregados na madeira: mesmo tirando o prego, o buraco fica.",
+            question: "Vale a pena ferir alguém para descarregar minha frustração do momento?",
+            action: "Peça desculpas sinceras sem tentar justificar seu comportamento impulsivo."
+          },
+          {
+            text: "Guardo ressentimento antigo e fico alimentando pensamentos de vingança.",
+            passage: "“Abandonem toda amargura, todo furor, toda ira e calúnia.” — Efésios 4:31",
+            virtue: "Perdão e desapego.",
+            advice: "Guardar raiva é como segurar um carbão em brasa com a intenção de atirar em alguém: quem se queima é você.",
+            question: "Até quando vou permitir que a atitude errada dessa pessoa controle meus dias?",
+            action: "Escreva um bilhete desabafando tudo e depois queime ou rasgue o papel como símbolo de libertação."
+          },
+          {
+            text: "Fiquei com raiva do trânsito, da fila ou de pequenos imprevistos do dia a dia.",
+            passage: "“O homem paciente mostra grande entendimento, mas o de genio estopim exibe tolices.” — Provérbios 14:29",
+            virtue: "Tolerância e serenidade.",
+            advice: "Coisas fora do seu controle vão acontecer. O único controle que você tem é sobre como reage a elas.",
+            action: "Respire fundo por 3 vezes e diga a si mesmo: 'Isso não vale a minha paz'."
           }
         ]
       },
       sloth: {
-        title: "Preguiça (Sloth)",
+        title: "🕸️ Preguiça (Sloth)",
+        color: "var(--color-sloth)",
         options: [
           {
-            text: "Deixei de cumprir minhas responsabilidades por procrastinação.",
-            passage: "“Tudo o que fizerem, façam de todo o coração.” — Colossenses 3:23. Comece com pequenos passos diários para vencer a inércia."
+            text: "Procrastinei tarefase responsabilidades importantes ficando no celular por horas.",
+            passage: "“Tudo o que fizerem, façam de todo o coração.” — Colossenses 3:23",
+            virtue: "Diligência e disciplina.",
+            advice: "A procrastinação raramente é preguiça pura; frequentemente é medo de falhar ou perfeccionismo.",
+            question: "Qual o menor passo que posso dar agora para sair do zero?",
+            action: "Aplique a regra dos 2 minutos: faça imediatamente qualquer tarefa pendente que leve menos de 2 minutos."
+          },
+          {
+            text: "Abandonei meus cuidados com a saúde física, alimentação ou rotina de sono.",
+            passage: "“Acaso não sabem que o corpo de vocês é santuário do Espírito?” — 1 Coríntios 6:19",
+            virtue: "Zelo e autocuidado.",
+            advice: "Seu corpo é o veículo da sua jornada terrestre. Cuidar dele é um ato de gratidão pela vida.",
+            question: "Que pequena mudança nos meus hábitos diários me traria mais energia?",
+            action: "Beba um copo de água, durma no horário correto ou faça uma caminhada leve hoje."
+          },
+          {
+            text: "Sinto uma apatia em relação ao futuro, sem metas nem vontade de lutar.",
+            passage: "“Desperta, ó tu que dormes, levanta-te dentre os mortos.” — Efésios 5:14",
+            virtue: "Esperança e propósito.",
+            advice: "A motivação não aparece antes do movimento; ela nasce enquanto você está em ação.",
+            question: "Se nada fosse impossível, qual seria meu primeiro objetivo?",
+            action: "Escreva uma meta simples para os próximos 30 dias e divida-a em pequenas etapas diárias."
           }
         ]
       }
@@ -244,8 +557,12 @@
       const data = database[sinKey];
       if (!data) return;
 
-      document.getElementById('sinTitle').innerText = data.title;
+      const contentArea = document.getElementById('contentArea');
+      const sinTitle = document.getElementById('sinTitle');
       const subOptionsDiv = document.getElementById('subOptions');
+      
+      sinTitle.innerText = data.title;
+      sinTitle.style.color = data.color;
       subOptionsDiv.innerHTML = '';
       document.getElementById('resultBox').style.display = 'none';
 
@@ -253,19 +570,81 @@
         const btn = document.createElement('button');
         btn.className = 'sub-btn';
         btn.innerText = opt.text;
-        btn.onclick = () => showResult(opt.passage);
+        btn.onclick = () => showResult(opt);
         subOptionsDiv.appendChild(btn);
       });
 
-      document.getElementById('contentArea').style.display = 'block';
+      contentArea.style.display = 'block';
+      contentArea.scrollIntoView({ behavior: 'smooth' });
     }
 
-    function showResult(passage) {
+    function showResult(opt) {
+      document.getElementById('resPassage').innerText = opt.passage;
+      document.getElementById('resVirtue').innerText = opt.virtue;
+      document.getElementById('resAdvice').innerText = opt.advice;
+      document.getElementById('resQuestion').innerText = opt.question;
+      document.getElementById('resAction').innerText = opt.action;
+      
       const resultBox = document.getElementById('resultBox');
-      const resultText = document.getElementById('resultText');
-      resultText.innerText = passage;
       resultBox.style.display = 'block';
+      resultBox.scrollIntoView({ behavior: 'smooth' });
     }
+
+    function filterContent() {
+      const query = document.getElementById('searchInput').value.toLowerCase();
+      const subOptionsDiv = document.getElementById('subOptions');
+      const sinTitle = document.getElementById('sinTitle');
+      const contentArea = document.getElementById('contentArea');
+
+      if (!query.trim()) {
+        contentArea.style.display = 'none';
+        return;
+      }
+
+      subOptionsDiv.innerHTML = '';
+      let count = 0;
+
+      Object.keys(database).forEach(key => {
+        const sin = database[key];
+        sin.options.forEach(opt => {
+          if (
+            opt.text.toLowerCase().includes(query) || 
+            sin.title.toLowerCase().includes(query) ||
+            opt.advice.toLowerCase().includes(query)
+          ) {
+            count++;
+            const btn = document.createElement('button');
+            btn.className = 'sub-btn';
+            btn.innerHTML = `<strong>${sin.title.split(' ')[1]}</strong>: ${opt.text}`;
+            btn.onclick = () => showResult(opt);
+            subOptionsDiv.appendChild(btn);
+          }
+        });
+      });
+
+      if (count > 0) {
+        sinTitle.innerText = `🔎 Resultados da Busca (${count})`;
+        sinTitle.style.color = "var(--accent-color)";
+        contentArea.style.display = 'block';
+      } else {
+        sinTitle.innerText = "Nenhum resultado encontrado";
+        subOptionsDiv.innerHTML = "<p style='color: var(--text-muted); padding: 10px;'>Tente buscar por termos mais simples como: <em>raiva, comida, inveja, dinheiro, celular, trabalho</em>.</p>";
+        contentArea.style.display = 'block';
+      }
+    }
+
+    function saveJournal() {
+      const text = document.getElementById('journalText').value;
+      localStorage.setItem('anonymous_journal', text);
+      alert('Sua nota reflexiva foi salva com segurança no seu dispositivo!');
+    }
+
+    window.onload = function() {
+      const saved = localStorage.getItem('anonymous_journal');
+      if (saved) {
+        document.getElementById('journalText').value = saved;
+      }
+    };
   </script>
 
 </body>
