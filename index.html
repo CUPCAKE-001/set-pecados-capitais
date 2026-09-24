@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reflexão e Apoio - Os 7 Pecados Capitais</title>
+  <style>
+    :root {
+      --bg-color: #0f0f12;
+      --card-bg: #1a1a24;
+      --accent-color: #ff4757;
+      --text-color: #e1e1e6;
+      --text-muted: #a8a8b3;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+      min-height: 100vh;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    header h1 {
+      font-size: 2.2rem;
+      color: var(--accent-color);
+      margin-bottom: 10px;
+      letter-spacing: 2px;
+    }
+
+    header p {
+      color: var(--text-muted);
+      max-width: 600px;
+    }
+
+    .grid-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 15px;
+      width: 100%;
+      max-width: 800px;
+      margin-bottom: 30px;
+    }
+
+    .sin-btn {
+      background-color: var(--card-bg);
+      border: 2px solid #2d2d3a;
+      border-radius: 12px;
+      padding: 20px 10px;
+      color: var(--text-color);
+      font-size: 1.1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-align: center;
+    }
+
+    .sin-btn:hover {
+      border-color: var(--accent-color);
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(255, 71, 87, 0.2);
+    }
+
+    .content-area {
+      width: 100%;
+      max-width: 800px;
+      background-color: var(--card-bg);
+      border-radius: 12px;
+      padding: 25px;
+      display: none;
+      border: 1px solid #2d2d3a;
+    }
+
+    .content-area h2 {
+      color: var(--accent-color);
+      margin-bottom: 15px;
+      font-size: 1.5rem;
+    }
+
+    .sub-options {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .sub-btn {
+      background-color: #262636;
+      border: 1px solid #3d3d52;
+      color: var(--text-color);
+      padding: 12px 15px;
+      border-radius: 8px;
+      cursor: pointer;
+      text-align: left;
+      transition: background-color 0.2s;
+    }
+
+    .sub-btn:hover {
+      background-color: #323247;
+    }
+
+    .result-box {
+      margin-top: 20px;
+      padding: 20px;
+      background-color: #12121a;
+      border-left: 4px solid var(--accent-color);
+      border-radius: 4px;
+      display: none;
+    }
+
+    .result-box h3 {
+      margin-bottom: 10px;
+      font-size: 1.1rem;
+    }
+
+    .result-box p {
+      line-height: 1.6;
+      color: var(--text-muted);
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>7 PECADOS CAPITAIS</h1>
+    <p>Selecione de forma totalmente anônima a área em que você busca orientação ou suporte moral/espiritual hoje.</p>
+  </header>
+
+  <!-- Grade dos 7 Pecados Capitais -->
+  <div class="grid-container">
+    <button class="sin-btn" onclick="selectSin('pride')">1. Orgulho</button>
+    <button class="sin-btn" onclick="selectSin('greed')">2. Ganância</button>
+    <button class="sin-btn" onclick="selectSin('lust')">3. Luxúria</button>
+    <button class="sin-btn" onclick="selectSin('envy')">4. Inveja</button>
+    <button class="sin-btn" onclick="selectSin('gluttony')">5. Gula</button>
+    <button class="sin-btn" onclick="selectSin('wrath')">6. Ira</button>
+    <button class="sin-btn" onclick="selectSin('sloth')">7. Preguiça</button>
+  </div>
+
+  <!-- Área de Exibição Dinâmica -->
+  <div id="contentArea" class="content-area">
+    <h2 id="sinTitle">Título</h2>
+    <p style="margin-bottom: 15px; color: var(--text-muted);">Qual destas situações melhor descreve o que você sentiu ou cometeu?</p>
+    
+    <div id="subOptions" class="sub-options"></div>
+
+    <div id="resultBox" class="result-box">
+      <h3>Passagem / Reflexão Recomendada:</h3>
+      <p id="resultText"></p>
+    </div>
+  </div>
+
+  <script>
+    // Base de dados com as opções e passagens reflexivas
+    const database = {
+      pride: {
+        title: "Orgulho (Pride)",
+        options: [
+          {
+            text: "Achei que era superior aos outros ou tive vergonha de pedir ajuda.",
+            passage: "“O orgulho vem antes da destruição, e o espírito altivo antes da queda.” — Provérbios 16:18. Lembre-se de que reconhecer a própria vulnerabilidade é um ato de coragem, não de fraqueza."
+          },
+          {
+            text: "Não consegui admitir que estava errado em uma discussão.",
+            passage: "“A resposta branda desvia o furor, mas a palavra dura suscita a ira.” — Provérbios 15:1. Admitir um erro demonstra maturidade e preserva relacionamentos."
+          }
+        ]
+      },
+      greed: {
+        title: "Ganância (Greed)",
+        options: [
+          {
+            text: "Desejei ter mais do que o necessário, mesmo prejudicando alguém.",
+            passage: "“A vida de um homem não consiste na abundância dos bens que possui.” — Lucas 12:15. A verdadeira riqueza está na paz de espírito e nas conexões humanas."
+          }
+        ]
+      },
+      lust: {
+        title: "Luxúria (Lust)",
+        options: [
+          {
+            text: "Olhei ou tratei outra pessoa apenas como um objeto de desejo.",
+            passage: "“Sobretudo o que se deve guardar, guarda o teu coração, porque dele procedem as fontes da vida.” — Provérbios 4:23. Respeitar a dignidade do outro fortalece sua própria integridade."
+          }
+        ]
+      },
+      envy: {
+        title: "Inveja (Envy)",
+        options: [
+          {
+            text: "Senti mágoa ou raiva ao ver a conquista de outra pessoa.",
+            passage: "“O coração em paz dá vida ao corpo, mas a inveja apodrece os ossos.” — Provérbios 14:30. Celebre o sucesso do próximo para atrair coisas positivas para sua própria jornada."
+          },
+          {
+            text: "Comparei minha vida com a de alguém na internet e me senti inferior.",
+            passage: "Cada pessoa tem um tempo e uma história única. Foque no seu próprio progresso diário em vez da vitrine alheia."
+          }
+        ]
+      },
+      gluttony: {
+        title: "Gula (Gluttony)",
+        options: [
+          {
+            text: "Busquei no excesso (comida, consumo, hábitos) um alívio para ansiedade.",
+            passage: "Tudo nos é permitido, mas nem tudo nos convém. Buscar o equilíbrio emocional é o primeiro passo para conter excessos."
+          }
+        ]
+      },
+      wrath: {
+        title: "Ira (Wrath)",
+        options: [
+          {
+            text: "Perdi o controle e magoei alguém com palavras de raiva.",
+            passage: "“Refreie a sua ira e abandone o furor; não se separe da paciência.” — Salmos 37:8. Respire fundo antes de redefinir suas atitudes em momentos de tensão."
+          }
+        ]
+      },
+      sloth: {
+        title: "Preguiça (Sloth)",
+        options: [
+          {
+            text: "Deixei de cumprir minhas responsabilidades por procrastinação.",
+            passage: "“Tudo o que fizerem, façam de todo o coração.” — Colossenses 3:23. Comece com pequenos passos diários para vencer a inércia."
+          }
+        ]
+      }
+    };
+
+    function selectSin(sinKey) {
+      const data = database[sinKey];
+      if (!data) return;
+
+      document.getElementById('sinTitle').innerText = data.title;
+      const subOptionsDiv = document.getElementById('subOptions');
+      subOptionsDiv.innerHTML = '';
+      document.getElementById('resultBox').style.display = 'none';
+
+      data.options.forEach((opt) => {
+        const btn = document.createElement('button');
+        btn.className = 'sub-btn';
+        btn.innerText = opt.text;
+        btn.onclick = () => showResult(opt.passage);
+        subOptionsDiv.appendChild(btn);
+      });
+
+      document.getElementById('contentArea').style.display = 'block';
+    }
+
+    function showResult(passage) {
+      const resultBox = document.getElementById('resultBox');
+      const resultText = document.getElementById('resultText');
+      resultText.innerText = passage;
+      resultBox.style.display = 'block';
+    }
+  </script>
+
+</body>
+</html>
