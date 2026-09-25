@@ -75,6 +75,13 @@
       cursor: pointer;
     }
 
+    .candle-btn.active {
+      background-color: #ffb142;
+      color: #1a1a24;
+      font-weight: bold;
+      box-shadow: 0 0 10px #ffb142;
+    }
+
     header {
       text-align: center;
       margin-bottom: 25px;
@@ -267,7 +274,6 @@
       cursor: pointer;
     }
 
-    /* Modal de Autenticação */
     .modal-overlay {
       position: fixed;
       top: 0; left: 0; width: 100%; height: 100%;
@@ -297,15 +303,10 @@
     <div style="font-weight: bold; color: var(--accent-color);">🕊️ Reflexão & Apoio</div>
     <div class="top-tools">
       <div id="userSection" class="user-section">
-        <span id="userStatus">Entrar para Salvar na Nuvem</span>
+        <span id="userStatus">Modo Offline / Local</span>
         <button class="auth-btn" id="loginBtn" onclick="openAuthModal()">🔑 Entrar</button>
       </div>
       <button class="candle-btn" id="candleBtn" onclick="toggleCandle()">🕯️ Acender Vela</button>
-      <select id="langSelect" class="lang-select" onchange="changeLanguage(this.value)">
-        <option value="pt" selected>🇵🇹 Português</option>
-        <option value="en">🇬🇧 English</option>
-        <option value="es">🇪🇸 Español</option>
-      </select>
     </div>
   </div>
 
@@ -315,7 +316,7 @@
   </header>
 
   <div class="search-box">
-    <input type="text" id="searchInput" class="search-input" placeholder="🔍 Pesquisar por palavra-chave (ex: trabalho, raiva, redes sociais...)" oninput="filterSituations()">
+    <input type="text" id="searchInput" class="search-input" placeholder="🔍 Pesquisar por palavra-chave (ex: raiva, inveja, comida, trabalho...)" oninput="filterSituations()">
   </div>
 
   <div class="grid-container" id="sinGrid"></div>
@@ -327,7 +328,7 @@
   <div id="contentArea" class="content-area">
     <h2 id="sinTitle">Título</h2>
     <div id="virtueBadge" class="virtue-badge"></div>
-    <p id="promptText" style="margin-bottom: 15px; color: var(--text-muted);">Qual destas situações melhor descreve o que você sentiu ou cometeu?</p>
+    <p id="promptText" style="margin-bottom: 15px; color: var(--text-muted);">Qual destas situações melhor descreve o que você sentiu?</p>
 
     <div id="subOptions" class="sub-options"></div>
 
@@ -370,7 +371,7 @@
     <ul id="journalList" class="journal-list"></ul>
   </div>
 
-  <!-- Modal de Login/Cadastro -->
+  <!-- Modal de Login -->
   <div class="modal-overlay" id="authModal">
     <div class="modal-card">
       <h2 style="color: var(--accent-color);">Minha Conta</h2>
@@ -387,70 +388,230 @@
   </div>
 
   <script>
-    // Configuração do Firebase (Chaves extraídas do console)
-    const firebaseConfig = {
-      apiKey: "AIzaSyCriuX-MW3MM4MZ1n-aLxH5XpK8tC9-TM",
-      authDomain: "reflexao-7-pecados.firebaseapp.com",
-      projectId: "reflexao-7-pecados",
-      storageBucket: "reflexao-7-pecados.firebasestorage.app",
-      messagingSenderId: "584317997328",
-      appId: "1:584317997328:web:bbc1bb477153575519595",
-      measurementId: "G-EPDVVZZGZL"
+    // Banco de dados dos Pecados
+    const sinsData = {
+      "Orgulho": {
+        virtue: "Virtude oposta: Humildade",
+        items: [
+          { sit: "Sentir-se superior aos outros por conquistas ou bens", ref: "Provérbios 16:18 — 'A vaidade precede a ruína, e o orgulho precede a queda.' Cultive a humildade reconhecendo o valor alheio." },
+          { sit: "Dificuldade em reconhecer erros ou pedir desculpas", ref: "Tiago 4:6 — 'Deus resiste aos soberbos, mas dá graça aos humildes.' Admitir falhas é sinal de força moral e maturidade." }
+        ]
+      },
+      "Ganância": {
+        virtue: "Virtude oposta: Generosidade",
+        items: [
+          { sit: "Desejo desmedido de acumular riquezas e bens materiais", ref: "1 Timóteo 6:10 — 'O amor ao dinheiro é a raiz de todos os males.' Lembre-se de que a verdadeira riqueza reside nas relações e na paz." },
+          { sit: "Recusa em ajudar quem precisa por apego material", ref: "Provérbios 11:24 — 'Quem dá com generosidade torna-se mais rico; quem retém o que deve fica na miséria.'" }
+        ]
+      },
+      "Luxúria": {
+        virtue: "Virtude oposta: Castidade / Domínio Próprio",
+        items: [
+          { sit: "Ver pessoas como meros objetos de desejo", ref: "1 Coríntios 6:19-20 — Respeite seu corpo e o dos outros com dignidade e autocontrole." },
+          { sit: "Pensamentos compulsivos que prejudicam o foco moral", ref: "Filipenses 4:8 — 'Tudo o que é verdadeiro, nobre e puro, nisso pensai.'" }
+        ]
+      },
+      "Inveja": {
+        virtue: "Virtude oposta: Caridade / Benevolência",
+        items: [
+          { sit: "Tristeza pelo sucesso ou felicidade alheia", ref: "Gálatas 5:26 — 'Não nos tornemos invejosos uns dos outros.' Alegre-se com as conquistas do próximo." },
+          { sit: "Desejo de que o outro perca o que conquistou", ref: "Provérbios 14:30 — 'O coração em paz dá vida ao corpo, mas a inveja corrói os ossos.'" }
+        ]
+      },
+      "Gula": {
+        virtue: "Virtude oposta: Temperança",
+        items: [
+          { sit: "Consumo excessivo de comida ou bebida sem necessidade", ref: "Provérbios 23:20-21 — Pratique o equilíbrio físico e espiritual em seus hábitos diários." },
+          { sit: "Buscar no excesso alimentar o alívio para ansiedade", ref: "1 Coríntios 10:31 — 'Quer comais, quer bebeis, fazei tudo para a glória de Deus.'" }
+        ]
+      },
+      "Ira": {
+        virtue: "Virtude oposta: Paciência",
+        items: [
+          { sit: "Explosões de raiva e agressividade verbal", ref: "Tiago 1:19-20 — 'Todo homem seja pronto para ouvir, tardio para falar, tardio para se irar.'" },
+          { sit: "Guardar rancor e desejar vingança", ref: "Efésios 4:26 — 'Não se ponha o sol sobre a vossa ira.' Perdoe para libertar o próprio coração." }
+        ]
+      },
+      "Preguiça": {
+        virtue: "Virtude oposta: Diligência",
+        items: [
+          { sit: "Procrastinação excessiva dos deveres diários", ref: "Provérbios 6:6-8 — 'Vai ter com a formiga, ó preguiçoso; olha para os seus caminhos e sê sábio.'" },
+          { sit: "Apatia e falta de cuidado com a própria vida espiritual", ref: "Romanos 12:11 — 'Não sejais vagarosos no cuidado; sede fervorosos no espírito.'" }
+        ]
+      }
     };
 
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db = firebase.firestore();
-
-    let currentUser = null;
+    let candleLit = false;
     let currentPassage = '';
 
-    // Monitor de Usuário Conectado
-    auth.onAuthStateChanged(user => {
-      currentUser = user;
-      const statusText = document.getElementById('userStatus');
-      const loginBtn = document.getElementById('loginBtn');
-      if (user) {
-        statusText.innerText = user.email || "Conectado";
-        loginBtn.innerText = "Sair";
-        loginBtn.onclick = () => auth.signOut();
+    // Inicialização da Tela
+    function renderGrid() {
+      const grid = document.getElementById('sinGrid');
+      grid.innerHTML = '';
+      Object.keys(sinsData).forEach(sin => {
+        const btn = document.createElement('button');
+        btn.className = 'sin-btn';
+        btn.innerText = sin;
+        btn.onclick = () => selectSin(sin);
+        grid.appendChild(btn);
+      });
+    }
+
+    function selectSin(sinName) {
+      const sin = sinsData[sinName];
+      if (!sin) return;
+
+      document.getElementById('sinTitle').innerText = sinName;
+      document.getElementById('virtueBadge').innerText = sin.virtue;
+      const subContainer = document.getElementById('subOptions');
+      subContainer.innerHTML = '';
+
+      sin.items.forEach(item => {
+        const btn = document.createElement('button');
+        btn.className = 'sub-btn';
+        btn.innerText = item.sit;
+        btn.onclick = () => showResult(item.ref);
+        subContainer.appendChild(btn);
+      });
+
+      document.getElementById('resultBox').style.display = 'none';
+      document.getElementById('contentArea').style.display = 'block';
+      document.getElementById('contentArea').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function showResult(refText) {
+      currentPassage = refText;
+      document.getElementById('resultText').innerText = refText;
+      document.getElementById('resultBox').style.display = 'block';
+    }
+
+    function toggleCandle() {
+      candleLit = !candleLit;
+      const btn = document.getElementById('candleBtn');
+      if (candleLit) {
+        btn.classList.add('active');
+        btn.innerText = '🔥 Vela Acesa';
       } else {
-        statusText.innerText = "Entrar para Salvar na Nuvem";
-        loginBtn.innerText = "🔑 Entrar";
-        loginBtn.onclick = openAuthModal;
+        btn.classList.remove('active');
+        btn.innerText = '🕯️ Acender Vela';
       }
-      loadJournal();
-    });
+    }
+
+    function getRandomReflection() {
+      const sinKeys = Object.keys(sinsData);
+      const randomSinKey = sinKeys[Math.floor(Math.random() * sinKeys.length)];
+      const items = sinsData[randomSinKey].items;
+      const randomItem = items[Math.floor(Math.random() * items.length)];
+
+      document.getElementById('sinTitle').innerText = randomSinKey + " (Reflexão Aleatória)";
+      document.getElementById('virtueBadge').innerText = sinsData[randomSinKey].virtue;
+      document.getElementById('subOptions').innerHTML = `<p style="padding: 10px; color: var(--text-muted);">Situação: "${randomItem.sit}"</p>`;
+      showResult(randomItem.ref);
+      document.getElementById('contentArea').style.display = 'block';
+      document.getElementById('contentArea').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function filterSituations() {
+      const term = document.getElementById('searchInput').value.toLowerCase();
+      if (!term) { renderGrid(); return; }
+
+      const grid = document.getElementById('sinGrid');
+      grid.innerHTML = '';
+
+      Object.keys(sinsData).forEach(sinName => {
+        const hasMatch = sinsData[sinName].items.some(item => 
+          item.sit.toLowerCase().includes(term) || item.ref.toLowerCase().includes(term)
+        ) || sinName.toLowerCase().includes(term);
+
+        if (hasMatch) {
+          const btn = document.createElement('button');
+          btn.className = 'sin-btn';
+          btn.innerText = sinName;
+          btn.onclick = () => selectSin(sinName);
+          grid.appendChild(btn);
+        }
+      });
+    }
+
+    function copyReflection() {
+      if (!currentPassage) return;
+      navigator.clipboard.writeText(currentPassage);
+      alert('Reflexão copiada!');
+    }
+
+    // Gerenciador Local e do Firebase
+    let currentUser = null;
+    let auth = null;
+    let db = null;
+
+    try {
+      const firebaseConfig = {
+        apiKey: "AIzaSyCriuX-MW3MM4MZ1n-aLxH5XpK8tC9-TM",
+        authDomain: "reflexao-7-pecados.firebaseapp.com",
+        projectId: "reflexao-7-pecados",
+        storageBucket: "reflexao-7-pecados.firebasestorage.app",
+        messagingSenderId: "584317997328",
+        appId: "1:584317997328:web:bbc1bb477153575519595"
+      };
+
+      firebase.initializeApp(firebaseConfig);
+      auth = firebase.auth();
+      db = firebase.firestore();
+
+      auth.onAuthStateChanged(user => {
+        currentUser = user;
+        const statusText = document.getElementById('userStatus');
+        const loginBtn = document.getElementById('loginBtn');
+        if (user) {
+          statusText.innerText = user.email || "Conectado";
+          loginBtn.innerText = "Sair";
+          loginBtn.onclick = () => auth.signOut();
+        } else {
+          statusText.innerText = "Modo Offline / Local";
+          loginBtn.innerText = "🔑 Entrar";
+          loginBtn.onclick = openAuthModal;
+        }
+        loadJournal();
+      });
+    } catch (e) {
+      console.warn("Firebase não inicializado, usando modo local:", e);
+    }
 
     function openAuthModal() { document.getElementById('authModal').style.display = 'flex'; }
     function closeAuthModal() { document.getElementById('authModal').style.display = 'none'; }
 
     function handleEmailLogin() {
+      if (!auth) return alert("Firebase não disponível no momento.");
       const email = document.getElementById('authEmail').value;
       const pass = document.getElementById('authPassword').value;
       auth.signInWithEmailAndPassword(email, pass).then(() => closeAuthModal()).catch(e => alert(e.message));
     }
 
     function handleEmailSignUp() {
+      if (!auth) return alert("Firebase não disponível no momento.");
       const email = document.getElementById('authEmail').value;
       const pass = document.getElementById('authPassword').value;
       auth.createUserWithEmailAndPassword(email, pass).then(() => closeAuthModal()).catch(e => alert(e.message));
     }
 
     function handleGoogleLogin() {
+      if (!auth) return alert("Firebase não disponível no momento.");
       const provider = new firebase.auth.GoogleAuthProvider();
       auth.signInWithPopup(provider).then(() => closeAuthModal()).catch(e => alert(e.message));
     }
 
-    // Carregar e Salvar (Nuvem ou LocalStorage)
     async function loadJournal() {
       const list = document.getElementById('journalList');
       list.innerHTML = '';
       let items = [];
 
-      if (currentUser) {
-        const snap = await db.collection('users').doc(currentUser.uid).collection('reflections').orderBy('timestamp', 'desc').get();
-        snap.forEach(doc => items.push({ id: doc.id, ...doc.data() }));
+      if (currentUser && db) {
+        try {
+          const snap = await db.collection('users').doc(currentUser.uid).collection('reflections').orderBy('timestamp', 'desc').get();
+          snap.forEach(doc => items.push({ id: doc.id, ...doc.data() }));
+        } catch(e) {
+          items = JSON.parse(localStorage.getItem('my_reflections') || '[]');
+        }
       } else {
         items = JSON.parse(localStorage.getItem('my_reflections') || '[]');
       }
@@ -476,7 +637,7 @@
 
       const entry = { date, text: `Registro: ${sin}`, mood, timestamp: Date.now() };
 
-      if (currentUser) {
+      if (currentUser && db) {
         await db.collection('users').doc(currentUser.uid).collection('reflections').add(entry);
       } else {
         const items = JSON.parse(localStorage.getItem('my_reflections') || '[]');
@@ -492,7 +653,7 @@
       const mood = document.getElementById('logMood').value;
       const entry = { date: today, text: `Passagem Salva: "${currentPassage.substring(0, 45)}..."`, mood, timestamp: Date.now() };
 
-      if (currentUser) {
+      if (currentUser && db) {
         await db.collection('users').doc(currentUser.uid).collection('reflections').add(entry);
       } else {
         const items = JSON.parse(localStorage.getItem('my_reflections') || '[]');
@@ -504,7 +665,7 @@
     }
 
     async function deleteJournalItem(idOrIndex) {
-      if (currentUser) {
+      if (currentUser && db) {
         await db.collection('users').doc(currentUser.uid).collection('reflections').doc(idOrIndex).delete();
       } else {
         const items = JSON.parse(localStorage.getItem('my_reflections') || '[]');
@@ -514,8 +675,11 @@
       loadJournal();
     }
 
+    // Inicialização
+    renderGrid();
+    loadJournal();
     document.getElementById('logDate').value = new Date().toISOString().split('T')[0];
   </script>
 </body>
-        </html>
-        
+  </html>
+  
