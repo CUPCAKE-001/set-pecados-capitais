@@ -4,6 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Reflexão e Apoio - Os 7 Pecados Capitais</title>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
   <style>
     :root {
       --bg-color: #0f0f12;
@@ -38,9 +44,28 @@
       justify-content: space-between;
       align-items: center;
       margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 10px;
     }
 
-    .lang-select {
+    .top-tools {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .user-section {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border-color);
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .lang-select, .candle-btn, .auth-btn {
       background-color: var(--card-bg);
       color: var(--text-color);
       border: 1px solid var(--border-color);
@@ -52,7 +77,7 @@
 
     header {
       text-align: center;
-      margin-bottom: 30px;
+      margin-bottom: 25px;
     }
 
     header h1 {
@@ -67,13 +92,29 @@
       max-width: 600px;
     }
 
+    .search-box {
+      width: 100%;
+      max-width: 800px;
+      margin-bottom: 20px;
+    }
+
+    .search-input {
+      width: 100%;
+      background-color: var(--card-bg);
+      border: 1px solid var(--border-color);
+      color: var(--text-color);
+      padding: 12px 15px;
+      border-radius: 8px;
+      font-size: 0.95rem;
+    }
+
     .grid-container {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
       gap: 15px;
       width: 100%;
       max-width: 800px;
-      margin-bottom: 30px;
+      margin-bottom: 20px;
     }
 
     .sin-btn {
@@ -93,6 +134,13 @@
       border-color: var(--accent-color);
       transform: translateY(-3px);
       box-shadow: 0 5px 15px rgba(255, 71, 87, 0.2);
+    }
+
+    .random-bar {
+      width: 100%;
+      max-width: 800px;
+      margin-bottom: 25px;
+      text-align: center;
     }
 
     .content-area, .journal-area {
@@ -129,6 +177,8 @@
       flex-direction: column;
       gap: 10px;
       margin-bottom: 20px;
+      max-height: 400px;
+      overflow-y: auto;
     }
 
     .sub-btn {
@@ -139,12 +189,9 @@
       border-radius: 8px;
       cursor: pointer;
       text-align: left;
-      transition: background-color 0.2s;
     }
 
-    .sub-btn:hover {
-      background-color: #323247;
-    }
+    .sub-btn:hover { background-color: #323247; }
 
     .result-box {
       margin-top: 20px;
@@ -155,16 +202,13 @@
       display: none;
     }
 
-    .result-box h3 {
-      margin-bottom: 10px;
-      font-size: 1.1rem;
-    }
-
     .result-box p {
       line-height: 1.6;
       color: var(--text-muted);
       margin-bottom: 15px;
     }
+
+    .btn-group { display: flex; gap: 10px; flex-wrap: wrap; }
 
     .action-btn {
       background-color: var(--accent-color);
@@ -177,8 +221,10 @@
       font-size: 0.85rem;
     }
 
-    .action-btn:hover {
-      opacity: 0.9;
+    .action-btn.secondary {
+      background-color: #262636;
+      border: 1px solid var(--border-color);
+      color: var(--text-color);
     }
 
     .journal-form {
@@ -219,7 +265,29 @@
       border: none;
       color: #ff4757;
       cursor: pointer;
-      font-size: 0.9rem;
+    }
+
+    /* Modal de Autenticação */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.8);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .modal-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      padding: 30px;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 400px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
     }
   </style>
 </head>
@@ -227,11 +295,18 @@
 
   <div class="top-bar">
     <div style="font-weight: bold; color: var(--accent-color);">🕊️ Reflexão & Apoio</div>
-    <select id="langSelect" class="lang-select" onchange="changeLanguage(this.value)">
-      <option value="pt" selected>🇵🇹 Português</option>
-      <option value="en">🇬🇧 English</option>
-      <option value="es">🇪🇸 Español</option>
-    </select>
+    <div class="top-tools">
+      <div id="userSection" class="user-section">
+        <span id="userStatus">Entrar para Salvar na Nuvem</span>
+        <button class="auth-btn" id="loginBtn" onclick="openAuthModal()">🔑 Entrar</button>
+      </div>
+      <button class="candle-btn" id="candleBtn" onclick="toggleCandle()">🕯️ Acender Vela</button>
+      <select id="langSelect" class="lang-select" onchange="changeLanguage(this.value)">
+        <option value="pt" selected>🇵🇹 Português</option>
+        <option value="en">🇬🇧 English</option>
+        <option value="es">🇪🇸 Español</option>
+      </select>
+    </div>
   </div>
 
   <header>
@@ -239,31 +314,39 @@
     <p id="mainDesc">Selecione de forma totalmente anônima a área em que você busca orientação ou suporte moral/espiritual hoje.</p>
   </header>
 
+  <div class="search-box">
+    <input type="text" id="searchInput" class="search-input" placeholder="🔍 Pesquisar por palavra-chave (ex: trabalho, raiva, redes sociais...)" oninput="filterSituations()">
+  </div>
+
   <div class="grid-container" id="sinGrid"></div>
 
-  <!-- Área de Exibição Dinâmica do Pecado Selecionado -->
+  <div class="random-bar">
+    <button class="action-btn secondary" id="randomBtn" onclick="getRandomReflection()" style="padding: 12px 20px; font-size: 0.95rem;">🎲 Reflexão do Dia (Aleatória)</button>
+  </div>
+
   <div id="contentArea" class="content-area">
     <h2 id="sinTitle">Título</h2>
     <div id="virtueBadge" class="virtue-badge"></div>
     <p id="promptText" style="margin-bottom: 15px; color: var(--text-muted);">Qual destas situações melhor descreve o que você sentiu ou cometeu?</p>
-    
+
     <div id="subOptions" class="sub-options"></div>
 
     <div id="resultBox" class="result-box">
       <h3 id="resultHeader">Passagem / Reflexão Recomendada:</h3>
       <p id="resultText"></p>
-      <button class="action-btn" id="saveBookmarkBtn" onclick="saveCurrentBookmark()">🔖 Guardar para refletir</button>
+      <div class="btn-group">
+        <button class="action-btn" id="saveBookmarkBtn" onclick="saveCurrentBookmark()">🔖 Guardar para refletir</button>
+        <button class="action-btn secondary" id="shareBtn" onclick="copyReflection()">📋 Copiar Reflexão</button>
+      </div>
     </div>
   </div>
 
-  <!-- Painel do Diário / Reflexões Salvas -->
   <div class="journal-area">
     <h2 id="journalTitle">📓 Seu Histórico & Marcadores Diários</h2>
     <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 15px;" id="journalDesc">
-      Acompanhe o seu progresso diário. Tudo é salvo apenas no seu dispositivo de forma privada.
+      Acompanhe seu progresso diário de forma totalmente privada.
     </p>
 
-    <!-- Registro Rápido do Dia -->
     <div class="journal-form">
       <input type="date" id="logDate" class="journal-input">
       <select id="logSin" class="journal-select">
@@ -276,335 +359,163 @@
         <option value="Ira">Ira</option>
         <option value="Preguiça">Preguiça</option>
       </select>
+      <select id="logMood" class="journal-select">
+        <option value="🕊️ Sereno">🕊️ Sereno</option>
+        <option value="⚡ Em conflito">⚡ Em conflito</option>
+        <option value="🌱 Em busca de paz">🌱 Em busca de paz</option>
+      </select>
       <button class="action-btn" id="addLogBtn" onclick="addDailyLog()">Registrar Dia</button>
     </div>
 
     <ul id="journalList" class="journal-list"></ul>
   </div>
 
+  <!-- Modal de Login/Cadastro -->
+  <div class="modal-overlay" id="authModal">
+    <div class="modal-card">
+      <h2 style="color: var(--accent-color);">Minha Conta</h2>
+      <p style="font-size: 0.85rem; color: var(--text-muted);">Sincronize suas reflexões em nuvem.</p>
+      <input type="email" id="authEmail" class="journal-input" placeholder="Seu e-mail">
+      <input type="password" id="authPassword" class="journal-input" placeholder="Sua senha">
+      <div style="display:flex; gap: 10px;">
+        <button class="action-btn" style="flex:1;" onclick="handleEmailLogin()">Entrar</button>
+        <button class="action-btn secondary" style="flex:1;" onclick="handleEmailSignUp()">Cadastrar</button>
+      </div>
+      <button class="action-btn secondary" onclick="handleGoogleLogin()">🌐 Entrar com Google</button>
+      <button class="delete-btn" onclick="closeAuthModal()" style="margin-top: 5px;">Cancelar</button>
+    </div>
+  </div>
+
   <script>
-    let currentLang = 'pt';
-    let currentSinKey = null;
+    // Configuração do Firebase (Chaves extraídas do console)
+    const firebaseConfig = {
+      apiKey: "AIzaSyCriuX-MW3MM4MZ1n-aLxH5XpK8tC9-TM",
+      authDomain: "reflexao-7-pecados.firebaseapp.com",
+      projectId: "reflexao-7-pecados",
+      storageBucket: "reflexao-7-pecados.firebasestorage.app",
+      messagingSenderId: "584317997328",
+      appId: "1:584317997328:web:bbc1bb477153575519595",
+      measurementId: "G-EPDVVZZGZL"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    let currentUser = null;
     let currentPassage = '';
 
-    const uiTexts = {
-      pt: {
-        title: "7 PECADOS CAPITAIS",
-        desc: "Selecione de forma totalmente anônima a área em que você busca orientação ou suporte moral/espiritual hoje.",
-        prompt: "Qual destas situações melhor descreve o que você sentiu ou cometeu?",
-        resultHeader: "Passagem / Reflexão Recomendada:",
-        virtueLabel: "Virtude para cultivar: ",
-        saveBtn: "🔖 Guardar para refletir",
-        journalTitle: "📓 Seu Histórico & Marcadores Diários",
-        journalDesc: "Acompanhe seu progresso diário de forma totalmente privada.",
-        addBtn: "Registrar Dia",
-        savedPassage: "Passagem Salva"
-      },
-      en: {
-        title: "7 DEADLY SINS",
-        desc: "Select fully anonymously the area where you seek guidance or moral/spiritual support today.",
-        prompt: "Which of these situations best describes what you felt or committed?",
-        resultHeader: "Recommended Passage / Reflection:",
-        virtueLabel: "Virtue to cultivate: ",
-        saveBtn: "🔖 Bookmark to reflect",
-        journalTitle: "📓 Your Daily History & Bookmarks",
-        journalDesc: "Track your daily progress completely in private.",
-        addBtn: "Log Day",
-        savedPassage: "Saved Passage"
-      },
-      es: {
-        title: "7 PECADOS CAPITALES",
-        desc: "Seleccione de forma totalmente anónima el área en la que busca orientación o apoyo moral/espiritual hoy.",
-        prompt: "¿Cuál de estas situaciones describe mejor lo que sintió o cometió?",
-        resultHeader: "Pasaje / Reflexión Recomendada:",
-        virtueLabel: "Virtud a cultivar: ",
-        saveBtn: "🔖 Guardar para reflexionar",
-        journalTitle: "📓 Su Historial y Marcadores Diarios",
-        journalDesc: "Siga su progreso diario de forma totalmente privada.",
-        addBtn: "Registrar Día",
-        savedPassage: "Pasaje Guardado"
+    // Monitor de Usuário Conectado
+    auth.onAuthStateChanged(user => {
+      currentUser = user;
+      const statusText = document.getElementById('userStatus');
+      const loginBtn = document.getElementById('loginBtn');
+      if (user) {
+        statusText.innerText = user.email || "Conectado";
+        loginBtn.innerText = "Sair";
+        loginBtn.onclick = () => auth.signOut();
+      } else {
+        statusText.innerText = "Entrar para Salvar na Nuvem";
+        loginBtn.innerText = "🔑 Entrar";
+        loginBtn.onclick = openAuthModal;
       }
-    };
+      loadJournal();
+    });
 
-    const database = {
-      pride: {
-        names: { pt: "1. Orgulho", en: "1. Pride", es: "1. Soberbia" },
-        titles: { pt: "Orgulho (Pride)", en: "Pride", es: "Soberbia" },
-        virtue: { pt: "Humildade", en: "Humility", es: "Humildad" },
-        options: [
-          {
-            text: {
-              pt: "Achei que era superior aos outros ou tive vergonha de pedir ajuda.",
-              en: "I felt superior to others or was ashamed to ask for help.",
-              es: "Me sentí superior a los demás o me dio vergüenza pedir ayuda."
-            },
-            passage: {
-              pt: "“O orgulho vem antes da destruição, e o espírito altivo antes da queda.” — Provérbios 16:18. Lembre-se de que reconhecer a própria vulnerabilidade é um ato de coragem, não de fraqueza.",
-              en: "“Pride goes before destruction, a haughty spirit before a fall.” — Proverbs 16:18. Remember that acknowledging vulnerability is courage.",
-              es: "“Antes del quebrantamiento es la soberbia, y antes de la caída la altivez de espíritu.” — Proverbios 16:18."
-            }
-          },
-          {
-            text: {
-              pt: "Não consegui admitir que estava errado em uma discussão.",
-              en: "I couldn't admit I was wrong during an argument.",
-              es: "No pude admitir que estaba equivocado en una discusión."
-            },
-            passage: {
-              pt: "“A resposta branda desvia o furor, mas a palavra dura suscita a ira.” — Provérbios 15:1. Admitir um erro demonstra maturidade e preserva relacionamentos.",
-              en: "“A gentle answer turns away wrath, but a harsh word stirs up anger.” — Proverbs 15:1. Admitting a mistake shows maturity.",
-              es: "“La blanda respuesta quita la ira; mas la palabra áspera hace subir el furor.” — Proverbios 15:1."
-            }
-          }
-        ]
-      },
-      greed: {
-        names: { pt: "2. Ganância", en: "2. Greed", es: "2. Avaricia" },
-        titles: { pt: "Ganância (Greed)", en: "Greed", es: "Avaricia" },
-        virtue: { pt: "Generosidade", en: "Generosity", es: "Generosidad" },
-        options: [
-          {
-            text: {
-              pt: "Desejei ter mais do que o necessário, mesmo prejudicando alguém.",
-              en: "I desired to have more than necessary, even at someone else's expense.",
-              es: "Deseé tener más de lo necesario, incluso perjudicando a alguien."
-            },
-            passage: {
-              pt: "“A vida de um homem não consiste na abundância dos bens que possui.” — Lucas 12:15. A verdadeira riqueza está na paz de espírito e nas conexões humanas.",
-              en: "“Life does not consist in an abundance of possessions.” — Luke 12:15. True wealth lies in peace and human connection.",
-              es: "“La vida del hombre no consiste en la abundancia de los bienes que posee.” — Lucas 12:15."
-            }
-          }
-        ]
-      },
-      lust: {
-        names: { pt: "3. Luxúria", en: "3. Lust", es: "3. Lujuria" },
-        titles: { pt: "Luxúria (Lust)", en: "Lust", es: "Lujuria" },
-        virtue: { pt: "Castidade / Pureza", en: "Chastity / Purity", es: "Castidad / Pureza" },
-        options: [
-          {
-            text: {
-              pt: "Olhei ou tratei outra pessoa apenas como um objeto de desejo.",
-              en: "I viewed or treated another person merely as an object of desire.",
-              es: "Miré o traté a otra persona meramente como un objeto de deseo."
-            },
-            passage: {
-              pt: "“Sobretudo o que se deve guardar, guarda o teu coração, porque dele procedem as fontes da vida.” — Provérbios 4:23. Respeitar a dignidade do outro fortalece sua própria integridade.",
-              en: "“Above all else, guard your heart, for everything you do flows from it.” — Proverbs 4:23. Respecting dignity strengthens integrity.",
-              es: "“Sobre toda cosa guardada, guarda tu corazón; porque de él mana la vida.” — Proverbios 4:23."
-            }
-          }
-        ]
-      },
-      envy: {
-        names: { pt: "4. Inveja", en: "4. Envy", es: "4. Envidia" },
-        titles: { pt: "Inveja (Envy)", en: "Envy", es: "Envidia" },
-        virtue: { pt: "Caridade / Amor Fraterno", en: "Charity / Kindness", es: "Caridad / Amor Fraterno" },
-        options: [
-          {
-            text: {
-              pt: "Senti mágoa ou raiva ao ver a conquista de outra pessoa.",
-              en: "I felt resentful or angry upon seeing someone else's achievement.",
-              es: "Sentí resentimiento o rabia al ver el logro de otra persona."
-            },
-            passage: {
-              pt: "“O coração em paz dá vida ao corpo, mas a inveja apodrece os ossos.” — Provérbios 14:30. Celebre o sucesso do próximo para atrair coisas positivas para sua própria jornada.",
-              en: "“A heart at peace gives life to the body, but envy rots the bones.” — Proverbs 14:30. Celebrate others' success.",
-              es: "“El corazón apacible es vida de la carne; mas la envidia es carcoma de los huesos.” — Proverbios 14:30."
-            }
-          },
-          {
-            text: {
-              pt: "Comparei minha vida com a de alguém na internet e me senti inferior.",
-              en: "I compared my life to someone online and felt inferior.",
-              es: "Comparé mi vida con la de alguien en internet y me sentí inferior."
-            },
-            passage: {
-              pt: "Cada pessoa tem um tempo e uma história única. Foque no seu próprio progresso diário em vez da vitrine alheia.",
-              en: "Everyone has a unique timeline and story. Focus on your daily growth rather than someone else's highlight reel.",
-              es: "Cada persona tiene un tiempo y una historia única. Enfócate en tu propio progreso diario."
-            }
-          }
-        ]
-      },
-      gluttony: {
-        names: { pt: "5. Gula", en: "5. Gluttony", es: "5. Gula" },
-        titles: { pt: "Gula (Gluttony)", en: "Gluttony", es: "Gula" },
-        virtue: { pt: "Temperança / Moderação", en: "Temperance", es: "Templanza" },
-        options: [
-          {
-            text: {
-              pt: "Busquei no excesso (comida, consumo, hábitos) um alívio para ansiedade.",
-              en: "I sought in excess (food, shopping, habits) relief for anxiety.",
-              es: "Busqué en el exceso (comida, compras, hábitos) un alivio para la ansiedad."
-            },
-            passage: {
-              pt: "Tudo nos é permitido, mas nem tudo nos convém. Buscar o equilíbrio emocional é o primeiro passo para conter excessos.",
-              en: "Seeking emotional balance and fulfilling voids with purpose is the first step to curbing excess.",
-              es: "Buscar el equilibrio emocional es el primer paso para contener excesos."
-            }
-          }
-        ]
-      },
-      wrath: {
-        names: { pt: "6. Ira", en: "6. Wrath", es: "6. Ira" },
-        titles: { pt: "Ira (Wrath)", en: "Wrath", es: "Ira" },
-        virtue: { pt: "Paciência", en: "Patience", es: "Paciencia" },
-        options: [
-          {
-            text: {
-              pt: "Perdi o controle e magoei alguém com palavras de raiva.",
-              en: "I lost control and hurt someone with angry words.",
-              es: "Perdí el control y herí a alguien con palabras de ira."
-            },
-            passage: {
-              pt: "“Refreie a sua ira e abandone o furor; não se separe da paciência.” — Salmos 37:8. Respire fundo antes de redefinir suas atitudes em momentos de tensão.",
-              en: "“Refrain from anger and turn from wrath; do not fret.” — Psalm 37:8. Take a deep breath before acting.",
-              es: "“Deja la ira, y desecha el enojo.” — Salmos 37:8."
-            }
-          }
-        ]
-      },
-      sloth: {
-        names: { pt: "7. Preguiça", en: "7. Sloth", es: "7. Pereza" },
-        titles: { pt: "Preguiça (Sloth)", en: "Sloth", es: "Pereza" },
-        virtue: { pt: "Diligência / Esmero", en: "Diligence", es: "Diligencia" },
-        options: [
-          {
-            text: {
-              pt: "Deixei de cumprir minhas responsabilidades por procrastinação.",
-              en: "I failed my responsibilities due to procrastination.",
-              es: "Dejé de cumplir mis responsabilidades por procrastinación."
-            },
-            passage: {
-              pt: "“Tudo o que fizerem, façam de todo o coração.” — Colossenses 3:23. Comece com pequenos passos diários para vencer a inércia.",
-              en: "“Whatever you do, work at it with all your heart.” — Colossians 3:23. Start with small steps to overcome inertia.",
-              es: "“Y todo lo que hagáis, hacedlo de corazón.” — Colosenses 3:23."
-            }
-          }
-        ]
-      }
-    };
+    function openAuthModal() { document.getElementById('authModal').style.display = 'flex'; }
+    function closeAuthModal() { document.getElementById('authModal').style.display = 'none'; }
 
-    function renderButtons() {
-      const grid = document.getElementById('sinGrid');
-      grid.innerHTML = '';
-      Object.keys(database).forEach(key => {
-        const btn = document.createElement('button');
-        btn.className = 'sin-btn';
-        btn.innerText = database[key].names[currentLang];
-        btn.onclick = () => selectSin(key);
-        grid.appendChild(btn);
-      });
+    function handleEmailLogin() {
+      const email = document.getElementById('authEmail').value;
+      const pass = document.getElementById('authPassword').value;
+      auth.signInWithEmailAndPassword(email, pass).then(() => closeAuthModal()).catch(e => alert(e.message));
     }
 
-    function updateLanguageTexts() {
-      const txt = uiTexts[currentLang];
-      document.getElementById('mainTitle').innerText = txt.title;
-      document.getElementById('mainDesc').innerText = txt.desc;
-      document.getElementById('promptText').innerText = txt.prompt;
-      document.getElementById('resultHeader').innerText = txt.resultHeader;
-      document.getElementById('saveBookmarkBtn').innerText = txt.saveBtn;
-      document.getElementById('journalTitle').innerText = txt.journalTitle;
-      document.getElementById('journalDesc').innerText = txt.journalDesc;
-      document.getElementById('addLogBtn').innerText = txt.addBtn;
-      renderButtons();
-      if (currentSinKey) {
-        selectSin(currentSinKey);
-      }
+    function handleEmailSignUp() {
+      const email = document.getElementById('authEmail').value;
+      const pass = document.getElementById('authPassword').value;
+      auth.createUserWithEmailAndPassword(email, pass).then(() => closeAuthModal()).catch(e => alert(e.message));
     }
 
-    function changeLanguage(lang) {
-      currentLang = lang;
-      updateLanguageTexts();
+    function handleGoogleLogin() {
+      const provider = new firebase.auth.GoogleAuthProvider();
+      auth.signInWithPopup(provider).then(() => closeAuthModal()).catch(e => alert(e.message));
     }
 
-    function selectSin(sinKey) {
-      currentSinKey = sinKey;
-      const data = database[sinKey];
-      if (!data) return;
-
-      document.getElementById('sinTitle').innerText = data.titles[currentLang];
-      document.getElementById('virtueBadge').innerText = uiTexts[currentLang].virtueLabel + data.virtue[currentLang];
-      
-      const subOptionsDiv = document.getElementById('subOptions');
-      subOptionsDiv.innerHTML = '';
-      document.getElementById('resultBox').style.display = 'none';
-
-      data.options.forEach((opt) => {
-        const btn = document.createElement('button');
-        btn.className = 'sub-btn';
-        btn.innerText = opt.text[currentLang];
-        btn.onclick = () => showResult(opt.passage[currentLang]);
-        subOptionsDiv.appendChild(btn);
-      });
-
-      document.getElementById('contentArea').style.display = 'block';
-    }
-
-    function showResult(passage) {
-      currentPassage = passage;
-      const resultBox = document.getElementById('resultBox');
-      const resultText = document.getElementById('resultText');
-      resultText.innerText = passage;
-      resultBox.style.display = 'block';
-    }
-
-    // Gerenciamento do LocalStorage (Diário & Marcadores)
-    function loadJournal() {
+    // Carregar e Salvar (Nuvem ou LocalStorage)
+    async function loadJournal() {
       const list = document.getElementById('journalList');
       list.innerHTML = '';
-      const items = JSON.parse(localStorage.getItem('my_reflections') || '[]');
-      
+      let items = [];
+
+      if (currentUser) {
+        const snap = await db.collection('users').doc(currentUser.uid).collection('reflections').orderBy('timestamp', 'desc').get();
+        snap.forEach(doc => items.push({ id: doc.id, ...doc.data() }));
+      } else {
+        items = JSON.parse(localStorage.getItem('my_reflections') || '[]');
+      }
+
       items.forEach((item, index) => {
         const li = document.createElement('li');
         li.className = 'journal-item';
         li.innerHTML = `
           <div>
-            <strong>${item.date}</strong> — <span>${item.text}</span>
+            <strong>${item.date}</strong> [${item.mood || '🕊️'}] — <span>${item.text}</span>
           </div>
-          <button class="delete-btn" onclick="deleteJournalItem(${index})">✕</button>
+          <button class="delete-btn" onclick="deleteJournalItem('${item.id || index}')">✕</button>
         `;
         list.appendChild(li);
       });
     }
 
-    function addDailyLog() {
+    async function addDailyLog() {
       const date = document.getElementById('logDate').value;
       const sin = document.getElementById('logSin').value;
+      const mood = document.getElementById('logMood').value;
       if (!date) return alert('Por favor, selecione uma data.');
 
-      const items = JSON.parse(localStorage.getItem('my_reflections') || '[]');
-      items.unshift({ date: date, text: `Registro: ${sin}` });
-      localStorage.setItem('my_reflections', JSON.stringify(items));
+      const entry = { date, text: `Registro: ${sin}`, mood, timestamp: Date.now() };
+
+      if (currentUser) {
+        await db.collection('users').doc(currentUser.uid).collection('reflections').add(entry);
+      } else {
+        const items = JSON.parse(localStorage.getItem('my_reflections') || '[]');
+        items.unshift(entry);
+        localStorage.setItem('my_reflections', JSON.stringify(items));
+      }
       loadJournal();
     }
 
-    function saveCurrentBookmark() {
+    async function saveCurrentBookmark() {
       if (!currentPassage) return;
       const today = new Date().toISOString().split('T')[0];
-      const items = JSON.parse(localStorage.getItem('my_reflections') || '[]');
-      items.unshift({ date: today, text: `${uiTexts[currentLang].savedPassage}: "${currentPassage.substring(0, 45)}..."` });
-      localStorage.setItem('my_reflections', JSON.stringify(items));
+      const mood = document.getElementById('logMood').value;
+      const entry = { date: today, text: `Passagem Salva: "${currentPassage.substring(0, 45)}..."`, mood, timestamp: Date.now() };
+
+      if (currentUser) {
+        await db.collection('users').doc(currentUser.uid).collection('reflections').add(entry);
+      } else {
+        const items = JSON.parse(localStorage.getItem('my_reflections') || '[]');
+        items.unshift(entry);
+        localStorage.setItem('my_reflections', JSON.stringify(items));
+      }
       loadJournal();
       alert('Reflexão guardada com sucesso!');
     }
 
-    function deleteJournalItem(index) {
-      const items = JSON.parse(localStorage.getItem('my_reflections') || '[]');
-      items.splice(index, 1);
-      localStorage.setItem('my_reflections', JSON.stringify(items));
+    async function deleteJournalItem(idOrIndex) {
+      if (currentUser) {
+        await db.collection('users').doc(currentUser.uid).collection('reflections').doc(idOrIndex).delete();
+      } else {
+        const items = JSON.parse(localStorage.getItem('my_reflections') || '[]');
+        items.splice(idOrIndex, 1);
+        localStorage.setItem('my_reflections', JSON.stringify(items));
+      }
       loadJournal();
     }
 
-    // Definir data de hoje no campo de data padrão
     document.getElementById('logDate').value = new Date().toISOString().split('T')[0];
-
-    // Inicialização
-    updateLanguageTexts();
-    loadJournal();
   </script>
-
 </body>
-  </html>
-  
+        </html>
+        
