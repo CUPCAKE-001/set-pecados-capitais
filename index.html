@@ -389,7 +389,93 @@
 
   <script>
     // Banco de dados dos Pecados
-    const sinsData = {
+        const sinsData = {
+      "Orgulho": {
+        virtue: "Virtude oposta: Humildade",
+        items: [
+          { sit: "Sentir-se superior aos outros por conquistas ou bens", ref: "Provérbios 16:18 — 'A vaidade precede a ruína, e o orgulho precede a queda.' Cultive a humildade reconhecendo o valor alheio." },
+          { sit: "Dificuldade em reconhecer erros ou pedir desculpas", ref: "Tiago 4:6 — 'Deus resiste aos soberbos, mas dá graça aos humildes.' Admitir falhas é sinal de força moral e maturidade." },
+          { sit: "Recusar ajuda por achar que sabe fazer tudo sozinho", ref: "Ecclesiastes 4:9-10 — 'Melhor é serem dois do que um. Se um cair, o outro levanta o seu companheiro.' Aceitar apoio aproxima as pessoas." },
+          { sit: "Procurar atenção ou elogios constantes para tudo o que faz", ref: "Mateus 6:1 — 'Guardai-vos de fazer as vossas boas obras diante dos homens, para serdes vistos por eles.' O verdadeiro mérito não precisa de espetáculo." },
+          { sit: "Menosprezar ou desvalorizar as opiniões e sentimentos alheios", ref: "Filipenses 2:3 — 'Nada façais por contenda ou por vanglória, mas por humildade; considerando os outros superiores a si mesmos.'" },
+          { sit: "Guardar ressentimento por não ter o seu ego alimentado", ref: "Galatas 6:3 — 'Porque, se alguém cuida ser alguma coisa, não sendo nada, engana-se a si mesmo.'" },
+          { sit: "Acreditar que está acima das regras ou das consequências", ref: "1 Coríntios 10:12 — 'Aquele, pois, que cuida estar em pé, olhe não caia.'" }
+        ]
+      },
+      "Ganância": {
+        virtue: "Virtude oposta: Generosidade",
+        items: [
+          { sit: "Desejo desmedido de acumular riquezas e bens materiais", ref: "1 Timóteo 6:10 — 'O amor ao dinheiro é a raiz de todos os males.' Lembre-se de que a verdadeira riqueza reside nas relações e na paz." },
+          { sit: "Recusa em ajudar quem precisa por apego material", ref: "Provérbios 11:24 — 'Quem dá com generosidade torna-se mais rico; quem retém o que deve fica na miséria.'" },
+          { sit: "Invejar o património ou o estatuto financeiro alheio", ref: "Hebreus 13:5 — 'Sejam vossos costumes sem avareza, contentando-vos com o que tendes.'" },
+          { sit: "Colocar o lucro ou vantagem pessoal acima da ética e amizade", ref: "Marcos 8:36 — 'Pois que aproveitaria ao homem ganhar todo o mundo e perder a sua alma?'" },
+          { sit: "Medo constante de perder dinheiro ou ficar sem recursos", ref: "Mateus 6:25 — 'Não andeis ansiosos pela vossa vida, quanto ao que haveis de comer ou beber... Olhai para as aves do céu.'" },
+          { sit: "Trabalhar compulsivamente negligenciando saúde e família por ganhos", ref: "Salmos 127:2 — 'Inútil vos será levantar de madrugada, repousar tarde... pois aos seus amados dá Deus o sono.'" },
+          { sit: "Explorar ou tirar vantagem indevida de alguém em negociações", ref: "Provérbios 22:16 — 'O que oprime ao pobre para se engrandecer a si mesmo... certamente virá a necessitar.'" }
+        ]
+      },
+      "Luxúria": {
+        virtue: "Virtude oposta: Castidade / Domínio Próprio",
+        items: [
+          { sit: "Ver pessoas como meros objetos de desejo ou satisfação", ref: "1 Coríntios 6:19-20 — Respeite seu corpo e o dos outros com dignidade e autocontrole." },
+          { sit: "Pensamentos compulsivos que prejudicam o foco moral e pessoal", ref: "Filipenses 4:8 — 'Tudo o que é verdadeiro, nobre e puro, nisso pensai.'" },
+          { sit: "Buscar prazer instantâneo em detrimento de compromissos reais", ref: "Galatas 5:16 — 'Andai em Espírito e não cumprireis a cobiça da carne.'" },
+          { sit: "Consumo excessivo de conteúdos apelativos ou pornográficos", ref: "Salmos 101:3 — 'Não porei coisa má diante dos meus olhos.' Mantenha a mente limpa e protegida." },
+          { sit: "Fantasiar com relacionamentos alheios promovendo a infidelidade", ref: "Mateus 5:28 — 'Qualquer que olhar para uma mulher com cobiça já em seu coração cometeu adultério.'" },
+          { sit: "Usar a sedução de forma manipuladora para obter vantagens", ref: "1 Tessalonicenses 4:3-5 — 'Que cada um de vós saiba possuir o seu vaso em santificação e honra, não na paixão da concupiscência.'" },
+          { sit: "Incapaz de manter fidelidade e respeito numa relação afetuosa", ref: "Provérbios 4:23 — 'Sobre tudo o que se deve guardar, guarda o teu coração, porque dele procedem as saídas da vida.'" }
+        ]
+      },
+      "Inveja": {
+        virtue: "Virtude oposta: Caridade / Benevolência",
+        items: [
+          { sit: "Tristeza pelo sucesso ou felicidade alheia", ref: "Gálatas 5:26 — 'Não nos tornemos invejosos uns dos outros.' Alegre-se com as conquistas do próximo." },
+          { sit: "Desejo oculto de que o outro perca o que conquistou", ref: "Provérbios 14:30 — 'O coração em paz dá vida ao corpo, mas a inveja corrói os ossos.'" },
+          { sit: "Comparar-se constantemente com os outros e sentir-se inferiorizado", ref: "2 Coríntios 10:12 — 'Eles, medindo-se consigo mesmos e comparando-se consigo mesmos, revelam falta de entendimento.'" },
+          { sit: "Fazer comentários depreciativos para diminuir o brilho de alguém", ref: "Tiago 3:16 — 'Onde há inveja e sentimento faccioso, aí há perturbação e toda a obra perversa.'" },
+          { sit: "Incapacidade de elogiar sinceramente as qualidades do próximo", ref: "Romanos 12:15 — 'Alegrai-vos com os que se alegram e chorai com os que choram.'" },
+          { sit: "Sentir frustração ao ver outras pessoas a receberem reconhecimento", ref: "1 Pedro 2:1 — 'Despojando-vos, pois, de toda a malícia, e de todo o engano, e fingimentos, e invejas...'" },
+          { sit: "Acreditar que a vida é injusta só porque os outros prosperam", ref: "Salmos 37:1 — 'Não te indignes por causa dos malfeitores, nem tenhas inveja dos que praticam a iniquidade.'" }
+        ]
+      },
+      "Gula": {
+        virtue: "Virtude oposta: Temperança",
+        items: [
+          { sit: "Consumo excessivo de comida ou bebida sem necessidade física", ref: "Provérbios 23:20-21 — Pratique o equilíbrio físico e espiritual em seus hábitos diários." },
+          { sit: "Buscar no excesso alimentar o alívio para ansiedade e tédio", ref: "1 Coríntios 10:31 — 'Quer comais, quer bebeis, fazei tudo para a glória de Deus.'" },
+          { sit: "Desperdiçar recursos com excessos e banquetes extravagantes", ref: "Lucas 16:19-21 — Lembre-se daqueles que carecem do básico antes de ceder ao exagero." },
+          { sit: "Impaciência e irritação quando a refeição atrasa ou não agrada", ref: "Gálatas 5:22-23 — O fruto do Espírito inclui amor, paz, paciência e domínio próprio." },
+          { sit: "Comer compulsivamente até sentir desconforto físico", ref: "Proverbios 25:16 — 'Achaste mel? Come somente o que te basta, para que porventura não te fartes dele e o vomites.'" },
+          { sit: "Fazer da comida e do prazer sensorial o foco principal do dia", ref: "Filipenses 3:19 — 'O fim deles é a ruína; o deus deles é o ventre... que só pensam nas coisas terrenas.'" },
+          { sit: "Negar-se a partilhar o alimento ou recursos com quem tem fome", ref: "Isaías 58:7 — 'Porventura não é também que repartas o teu pão com o faminto?'" }
+        ]
+      },
+      "Ira": {
+        virtue: "Virtude oposta: Paciência",
+        items: [
+          { sit: "Explosões frequentes de raiva e agressividade verbal ou física", ref: "Tiago 1:19-20 — 'Todo homem seja pronto para ouvir, tardio para falar, tardio para se irar.'" },
+          { sit: "Guardar rancor acumulado e desejar vingança contra alguém", ref: "Efésios 4:26 — 'Não se ponha o sol sobre a vossa ira.' Perdoe para libertar o próprio coração." },
+          { sit: "Perder o controlo por contrariedades pequenas do dia a dia", ref: "Provérbios 16:32 — 'Melhor é o que tarda em irar-se do que o poderoso, e o que controla o seu ânimo do que o que toma uma cidade.'" },
+          { sit: "Uso de palavras duras ou insultos no calor de uma discussão", ref: "Provérbios 15:1 — 'A resposta branda desvia o furor, mas a palavra dura suscita a ira.'" },
+          { sit: "Recusar reconciliar-se ou aceitar pedidos de desculpas", ref: "Colossenses 3:13 — 'Suportando-vos uns aos outros, e perdoando-vos uns aos outros, se algum tiver queixa contra outro.'" },
+          { sit: "Alimentar maus pensamentos sobre pessoas que o prejudicaram", ref: "Romanos 12:19 — 'Não vos vingueis a vós mesmos, amados, mas dai lugar à ira, porque está escrito: Minha é a vingança; eu recompensarei, diz o Senhor.'" },
+          { sit: "Sentir prazer em ver quem o ofendeu a passar por dificuldades", ref: "Provérbios 24:17 — 'Quando cair o teu inimigo, não te me alegres, nem se regozije o teu coração quando ele tropeçar.'" }
+        ]
+      },
+      "Preguiça": {
+        virtue: "Virtude oposta: Diligência",
+        items: [
+          { sit: "Procrastinação excessiva e adiamento constante dos deveres", ref: "Provérbios 6:6-8 — 'Vai ter com a formiga, ó preguiçoso; olha para os seus caminhos e sê sábio.'" },
+          { sit: "Apatia e falta de cuidado com a própria vida espiritual e física", ref: "Romanos 12:11 — 'Não sejais vagarosos no cuidado; sede fervorosos no espírito.'" },
+          { sit: "Deixar que os outros façam o trabalho que é da sua responsabilidade", ref: "2 Tessalonicenses 3:10 — 'Se alguém não quer trabalhar, também não coma.'" },
+          { sit: "Fazer as tarefas sem capricho ou de forma desleixada", ref: "Colossenses 3:23 — 'E tudo quanto fizerdes, fazei-o de todo o coração, como ao Senhor, e não aos homens.'" },
+          { sit: "Inventar desculpas frequentes para não cumprir metas ou prazos", ref: "Provérbios 22:13 — 'Diz o preguiçoso: Um leão está lá fora; serei morto no meio das ruas.'" },
+          { sit: "Falta de iniciativa para mudar uma situação má na sua vida", ref: "Provérbios 13:4 — 'O que a alma do preguiçoso deseja, ele não alcança, mas a alma dos diligentes se engorda.'" },
+          { sit: "Acomodação num estilo de vida passivo sem objetivos ou propósitos", ref: "Efésios 5:15-16 — 'Vede prudentemente como andais, não como néscios, mas como sábios, remindo o tempo.'" }
+        ]
+      }
+    };
+    
       "Orgulho": {
         virtue: "Virtude oposta: Humildade",
         items: [
