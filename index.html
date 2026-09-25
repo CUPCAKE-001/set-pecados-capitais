@@ -1,720 +1,910 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Reflexão e Apoio - Os 7 Pecados Capitais</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reflexão & Apoio</title>
 
-  <!-- Firebase SDKs -->
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,600;1,9..144,400&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 
-  <style>
-    :root {
-      --bg-color: #0f0f12;
-      --card-bg: #1a1a24;
-      --accent-color: #ff4757;
-      --text-color: #e1e1e6;
-      --text-muted: #a8a8b3;
-      --border-color: #2d2d3a;
-    }
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
+<style>
+  :root{
+    --bg:#14131c;
+    --bg-soft:#191722;
+    --card:#1f1d2b;
+    --card-hi:#252336;
+    --rule:#332f42;
+    --ink:#ece7f0;
+    --ink-muted:#a49cb8;
+    --ink-faint:#726a87;
+    --gold:#cf9c4a;
+    --gold-bright:#e8b968;
+    --gold-dim:rgba(207,156,74,.14);
+    --danger:#c96a5a;
+    --radius-s:6px;
+    --radius-m:10px;
+    --focus:2px solid var(--gold-bright);
+  }
 
-    body {
-      background-color: var(--bg-color);
-      color: var(--text-color);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 20px;
-      min-height: 100vh;
-    }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:
+      radial-gradient(ellipse 900px 500px at 50% -10%, rgba(207,156,74,.07), transparent 60%),
+      var(--bg);
+    color:var(--ink);
+    font-family:'Work Sans', system-ui, sans-serif;
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+    padding-bottom:60px;
+  }
+  h1,h2,h3{
+    font-family:'Fraunces', Georgia, serif;
+    font-weight:500;
+    letter-spacing:.2px;
+    margin:0;
+  }
+  button, input, select{ font-family:inherit; }
+  :focus-visible{ outline:var(--focus); outline-offset:2px; }
+  ::selection{ background:var(--gold-dim); color:var(--gold-bright); }
 
-    .top-bar {
-      width: 100%;
-      max-width: 800px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-      flex-wrap: wrap;
-      gap: 10px;
-    }
+  a{ color:var(--gold-bright); }
 
-    .top-tools {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
+  .wrap{ max-width:680px; margin:0 auto; padding:0 20px; }
 
-    .user-section {
-      background-color: var(--card-bg);
-      border: 1px solid var(--border-color);
-      padding: 6px 12px;
-      border-radius: 8px;
-      font-size: 0.85rem;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
+  /* ---------- Header ---------- */
+  .topbar{
+    display:flex; align-items:center; justify-content:space-between;
+    gap:12px; padding:16px 0; flex-wrap:wrap;
+    border-bottom:1px solid var(--rule);
+    margin-bottom:8px;
+  }
+  .brand{
+    display:flex; align-items:center; gap:10px;
+    font-family:'Fraunces', serif; font-size:1rem; color:var(--ink-muted);
+  }
+  .flame{ width:18px; height:22px; display:block; }
+  .flame .glow{ opacity:.35; transition:opacity .4s ease; }
+  .flame.lit .glow{ opacity:1; }
+  .flame.lit .tongue{ animation:flicker 2.6s ease-in-out infinite; transform-origin:50% 100%; }
+  @keyframes flicker{
+    0%,100%{ transform:scaleY(1) rotate(0deg); }
+    30%{ transform:scaleY(1.06) rotate(-1.5deg); }
+    55%{ transform:scaleY(.94) rotate(1.5deg); }
+    80%{ transform:scaleY(1.03) rotate(-1deg); }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .flame.lit .tongue{ animation:none; }
+  }
 
-    .lang-select, .candle-btn, .auth-btn {
-      background-color: var(--card-bg);
-      color: var(--text-color);
-      border: 1px solid var(--border-color);
-      padding: 8px 12px;
-      border-radius: 8px;
-      font-size: 0.9rem;
-      cursor: pointer;
-    }
+  .top-tools{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+  .pill-btn{
+    background:var(--card); color:var(--ink);
+    border:1px solid var(--rule); padding:8px 14px;
+    border-radius:999px; font-size:.82rem; cursor:pointer;
+    transition:border-color .2s ease, background .2s ease;
+    white-space:nowrap;
+  }
+  .pill-btn:hover{ border-color:var(--gold); }
+  .pill-btn.lit{ background:var(--gold-dim); border-color:var(--gold); color:var(--gold-bright); }
+  .user-chip{
+    font-size:.78rem; color:var(--ink-faint);
+    display:flex; align-items:center; gap:8px;
+  }
 
-    .candle-btn.active {
-      background-color: #ffb142;
-      color: #1a1a24;
-      font-weight: bold;
-      box-shadow: 0 0 10px #ffb142;
-    }
+  header.hero{ text-align:center; padding:40px 0 28px; }
+  header.hero h1{
+    font-size:clamp(1.9rem, 5vw, 2.5rem);
+    color:var(--ink);
+    font-weight:500;
+  }
+  header.hero h1 em{ font-style:italic; color:var(--gold-bright); }
+  header.hero p{
+    color:var(--ink-muted);
+    max-width:46ch; margin:14px auto 0;
+    font-size:.95rem;
+  }
 
-    header {
-      text-align: center;
-      margin-bottom: 25px;
-    }
+  /* ---------- Search ---------- */
+  .search-box{ margin-bottom:22px; }
+  .search-input{
+    width:100%; background:var(--card); border:1px solid var(--rule);
+    color:var(--ink); padding:13px 16px; border-radius:var(--radius-m);
+    font-size:.92rem;
+  }
+  .search-input::placeholder{ color:var(--ink-faint); }
+  .search-input:focus{ border-color:var(--gold); }
 
-    header h1 {
-      font-size: 2.2rem;
-      color: var(--accent-color);
-      margin-bottom: 10px;
-      letter-spacing: 2px;
-    }
+  /* ---------- Sins list ---------- */
+  .sin-list{ list-style:none; margin:0 0 26px; padding:0; border-top:1px solid var(--rule); }
+  .sin-row{
+    width:100%; display:flex; align-items:baseline; gap:16px;
+    background:none; border:none; border-bottom:1px solid var(--rule);
+    color:var(--ink); text-align:left; padding:15px 4px; cursor:pointer;
+  }
+  .sin-row:hover{ background:var(--gold-dim); }
+  .sin-row[aria-expanded="true"]{ background:var(--gold-dim); }
+  .sin-num{
+    font-family:'Fraunces', serif; font-style:italic; font-size:.85rem;
+    color:var(--gold); width:1.6em; flex:none;
+  }
+  .sin-name{ font-size:1.05rem; font-weight:500; flex:1; }
+  .sin-virtue-hint{ font-size:.75rem; color:var(--ink-faint); flex:none; }
+  .sin-row .chev{ color:var(--ink-faint); transition:transform .2s ease; flex:none; }
+  .sin-row[aria-expanded="true"] .chev{ transform:rotate(90deg); color:var(--gold-bright); }
 
-    header p {
-      color: var(--text-muted);
-      max-width: 600px;
-    }
+  .no-results{ color:var(--ink-faint); font-size:.88rem; padding:18px 4px; }
 
-    .search-box {
-      width: 100%;
-      max-width: 800px;
-      margin-bottom: 20px;
-    }
+  /* ---------- Detail panel ---------- */
+  .content-area{
+    display:none; background:var(--card); border:1px solid var(--rule);
+    border-radius:var(--radius-m); padding:24px 22px; margin-bottom:26px;
+  }
+  .content-area h2{ font-size:1.4rem; color:var(--ink); margin-bottom:6px; }
+  .virtue-badge{
+    display:inline-block; font-size:.78rem; color:var(--gold-bright);
+    border:1px solid var(--gold); padding:4px 11px; border-radius:999px;
+    margin-bottom:16px; background:var(--gold-dim);
+  }
+  .prompt-text{ color:var(--ink-muted); font-size:.88rem; margin-bottom:14px; }
 
-    .search-input {
-      width: 100%;
-      background-color: var(--card-bg);
-      border: 1px solid var(--border-color);
-      color: var(--text-color);
-      padding: 12px 15px;
-      border-radius: 8px;
-      font-size: 0.95rem;
-    }
+  .sub-options{ display:flex; flex-direction:column; gap:8px; margin-bottom:6px; }
+  .sub-btn{
+    background:var(--bg-soft); border:1px solid var(--rule); color:var(--ink);
+    padding:12px 14px; border-radius:var(--radius-s); cursor:pointer;
+    text-align:left; font-size:.9rem; line-height:1.45;
+  }
+  .sub-btn:hover{ border-color:var(--gold); }
+  .sub-btn.chosen{ border-color:var(--gold-bright); background:var(--gold-dim); }
 
-    .grid-container {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-      gap: 15px;
-      width: 100%;
-      max-width: 800px;
-      margin-bottom: 20px;
-    }
+  .random-situation{ padding:10px 2px; color:var(--ink-muted); font-size:.88rem; font-style:italic; }
 
-    .sin-btn {
-      background-color: var(--card-bg);
-      border: 2px solid var(--border-color);
-      border-radius: 12px;
-      padding: 20px 10px;
-      color: var(--text-color);
-      font-size: 1.1rem;
-      font-weight: bold;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      text-align: center;
-    }
+  .result-box{
+    margin-top:18px; padding:20px 20px 18px; background:var(--bg-soft);
+    border-left:3px solid var(--gold); border-radius:0 var(--radius-s) var(--radius-s) 0;
+    display:none;
+  }
+  .result-box p{
+    font-family:'Fraunces', serif; font-size:1.02rem; line-height:1.65;
+    color:var(--ink); margin-bottom:16px;
+  }
+  .btn-group{ display:flex; gap:10px; flex-wrap:wrap; }
+  .action-btn{
+    background:var(--gold); color:#1b1608; border:none; padding:9px 16px;
+    border-radius:var(--radius-s); cursor:pointer; font-weight:600; font-size:.82rem;
+  }
+  .action-btn:hover{ background:var(--gold-bright); }
+  .action-btn.secondary{
+    background:transparent; border:1px solid var(--rule); color:var(--ink-muted);
+  }
+  .action-btn.secondary:hover{ border-color:var(--gold); color:var(--ink); }
 
-    .sin-btn:hover {
-      border-color: var(--accent-color);
-      transform: translateY(-3px);
-      box-shadow: 0 5px 15px rgba(255, 71, 87, 0.2);
-    }
+  .random-bar{ text-align:center; margin-bottom:34px; }
+  .random-bar .action-btn.secondary{ padding:12px 22px; font-size:.86rem; }
 
-    .random-bar {
-      width: 100%;
-      max-width: 800px;
-      margin-bottom: 25px;
-      text-align: center;
-    }
+  /* ---------- Journal ---------- */
+  .journal-area{
+    border-top:1px solid var(--rule); padding-top:30px;
+  }
+  .journal-head{ display:flex; align-items:baseline; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:6px;}
+  .journal-area h2{ font-size:1.3rem; }
+  .streak{
+    font-size:.78rem; color:var(--gold-bright); background:var(--gold-dim);
+    border:1px solid var(--gold); padding:4px 10px; border-radius:999px; white-space:nowrap;
+  }
+  .journal-desc{ color:var(--ink-muted); font-size:.85rem; margin-bottom:18px; }
 
-    .content-area, .journal-area {
-      width: 100%;
-      max-width: 800px;
-      background-color: var(--card-bg);
-      border-radius: 12px;
-      padding: 25px;
-      margin-bottom: 25px;
-      border: 1px solid var(--border-color);
-    }
+  .journal-form{
+    display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:22px;
+  }
+  .field{ display:flex; flex-direction:column; gap:5px; }
+  .field label{ font-size:.72rem; color:var(--ink-faint); }
+  .journal-input, .journal-select{
+    background:var(--bg-soft); border:1px solid var(--rule); color:var(--ink);
+    padding:10px; border-radius:var(--radius-s); font-size:.86rem; width:100%;
+  }
+  .journal-form .field.full{ grid-column:1 / -1; }
+  .journal-form .action-btn{ grid-column:1 / -1; padding:11px; }
 
-    .content-area { display: none; }
+  .journal-empty{ color:var(--ink-faint); font-size:.85rem; padding:14px 0; }
+  .journal-list{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:2px; }
+  .journal-item{
+    display:flex; justify-content:space-between; align-items:center; gap:10px;
+    padding:13px 2px; border-bottom:1px solid var(--rule);
+  }
+  .journal-item .meta{ display:flex; flex-direction:column; gap:2px; }
+  .journal-item .date{ font-size:.78rem; color:var(--ink-faint); }
+  .journal-item .text{ font-size:.9rem; }
+  .journal-item .mood{ margin-right:4px; }
+  .delete-btn{
+    background:none; border:none; color:var(--ink-faint); cursor:pointer;
+    font-size:1rem; line-height:1; padding:6px; border-radius:var(--radius-s);
+  }
+  .delete-btn:hover{ color:var(--danger); }
 
-    .content-area h2, .journal-area h2 {
-      color: var(--accent-color);
-      margin-bottom: 15px;
-      font-size: 1.5rem;
-    }
+  /* ---------- Modals ---------- */
+  .modal-overlay{
+    position:fixed; inset:0; background:rgba(10,9,14,.78);
+    display:none; justify-content:center; align-items:center; z-index:1000; padding:20px;
+  }
+  .modal-card{
+    background:var(--card); border:1px solid var(--rule); padding:26px;
+    border-radius:var(--radius-m); width:100%; max-width:380px;
+    display:flex; flex-direction:column; gap:13px;
+  }
+  .modal-card h2{ font-size:1.2rem; color:var(--ink); }
+  .modal-card .fine{ font-size:.8rem; color:var(--ink-muted); margin-top:-8px; }
+  .modal-row{ display:flex; gap:10px; }
+  .modal-row .action-btn{ flex:1; }
+  .modal-close{
+    background:none; border:none; color:var(--ink-faint); font-size:.82rem;
+    cursor:pointer; align-self:center; margin-top:2px;
+  }
+  .modal-close:hover{ color:var(--ink); }
 
-    .virtue-badge {
-      display: inline-block;
-      background-color: #262636;
-      border: 1px solid var(--accent-color);
-      color: var(--text-color);
-      padding: 6px 12px;
-      border-radius: 20px;
-      font-size: 0.85rem;
-      margin-bottom: 15px;
-    }
+  /* ---------- Toasts ---------- */
+  .toast-stack{
+    position:fixed; bottom:18px; left:50%; transform:translateX(-50%);
+    display:flex; flex-direction:column; gap:8px; z-index:1100; width:100%;
+    max-width:340px; padding:0 16px; pointer-events:none;
+  }
+  .toast{
+    background:var(--card); border:1px solid var(--gold); color:var(--ink);
+    padding:11px 16px; border-radius:var(--radius-s); font-size:.84rem;
+    box-shadow:0 8px 24px rgba(0,0,0,.35);
+    animation:toast-in .25s ease-out;
+  }
+  @keyframes toast-in{ from{ opacity:0; transform:translateY(8px);} to{ opacity:1; transform:translateY(0);} }
 
-    .sub-options {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      margin-bottom: 20px;
-      max-height: 400px;
-      overflow-y: auto;
-    }
-
-    .sub-btn {
-      background-color: #262636;
-      border: 1px solid #3d3d52;
-      color: var(--text-color);
-      padding: 12px 15px;
-      border-radius: 8px;
-      cursor: pointer;
-      text-align: left;
-    }
-
-    .sub-btn:hover { background-color: #323247; }
-
-    .result-box {
-      margin-top: 20px;
-      padding: 20px;
-      background-color: #12121a;
-      border-left: 4px solid var(--accent-color);
-      border-radius: 4px;
-      display: none;
-    }
-
-    .result-box p {
-      line-height: 1.6;
-      color: var(--text-muted);
-      margin-bottom: 15px;
-    }
-
-    .btn-group { display: flex; gap: 10px; flex-wrap: wrap; }
-
-    .action-btn {
-      background-color: var(--accent-color);
-      color: white;
-      border: none;
-      padding: 8px 14px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: bold;
-      font-size: 0.85rem;
-    }
-
-    .action-btn.secondary {
-      background-color: #262636;
-      border: 1px solid var(--border-color);
-      color: var(--text-color);
-    }
-
-    .journal-form {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 20px;
-      flex-wrap: wrap;
-    }
-
-    .journal-input, .journal-select {
-      background-color: #12121a;
-      border: 1px solid var(--border-color);
-      color: var(--text-color);
-      padding: 10px;
-      border-radius: 6px;
-      font-size: 0.9rem;
-    }
-
-    .journal-list {
-      list-style: none;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .journal-item {
-      background-color: #12121a;
-      padding: 12px;
-      border-radius: 6px;
-      border-left: 3px solid var(--accent-color);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .delete-btn {
-      background: none;
-      border: none;
-      color: #ff4757;
-      cursor: pointer;
-    }
-
-    .modal-overlay {
-      position: fixed;
-      top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.8);
-      display: none;
-      justify-content: center;
-      align-items: center;
-      z-index: 1000;
-    }
-
-    .modal-card {
-      background: var(--card-bg);
-      border: 1px solid var(--border-color);
-      padding: 30px;
-      border-radius: 12px;
-      width: 90%;
-      max-width: 400px;
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-    }
-  </style>
+  footer.note{
+    text-align:center; color:var(--ink-faint); font-size:.75rem;
+    margin-top:40px; padding-top:20px; border-top:1px solid var(--rule);
+  }
+</style>
 </head>
 <body>
 
-  <div class="top-bar">
-    <div style="font-weight: bold; color: var(--accent-color);">🕊️ Reflexão & Apoio</div>
+<div class="wrap">
+
+  <div class="topbar">
+    <div class="brand">
+      <svg class="flame" id="flameIcon" viewBox="0 0 24 28" aria-hidden="true">
+        <ellipse class="glow" cx="12" cy="24" rx="9" ry="3" fill="var(--gold)"/>
+        <path class="tongue" d="M12 2c3 4-2 6-2 10a4 4 0 0 0 8 0c0-2-1-3-1-3 1 3-1 5-3 5a4 4 0 0 1-4-4c0-3 2-4 2-8z" fill="var(--gold-bright)"/>
+      </svg>
+      Reflexão &amp; Apoio
+    </div>
     <div class="top-tools">
-      <div id="userSection" class="user-section">
-        <span id="userStatus">Modo Offline / Local</span>
-        <button class="auth-btn" id="loginBtn" onclick="openAuthModal()">🔑 Entrar</button>
-      </div>
-      <button class="candle-btn" id="candleBtn" onclick="toggleCandle()">🕯️ Acender Vela</button>
+      <span class="user-chip" id="userStatus">Modo local · privado</span>
+      <button class="pill-btn" id="loginBtn" onclick="openAuthModal()">Entrar</button>
+      <button class="pill-btn" id="candleBtn" onclick="toggleCandle()" aria-pressed="false">Acender vela</button>
     </div>
   </div>
 
-  <header>
-    <h1 id="mainTitle">7 PECADOS CAPITAIS</h1>
-    <p id="mainDesc">Selecione de forma totalmente anônima a área em que você busca orientação ou suporte moral/espiritual hoje.</p>
+  <header class="hero">
+    <h1>Sete convites à <em>reflexão</em></h1>
+    <p>Um espaço anônimo e privado para reconhecer o que pesa e encontrar, com calma, um caminho de volta ao equilíbrio.</p>
   </header>
 
   <div class="search-box">
-    <input type="text" id="searchInput" class="search-input" placeholder="🔍 Pesquisar por palavra-chave (ex: raiva, inveja, comida, trabalho...)" oninput="filterSituations()">
+    <label for="searchInput" class="visually-hidden" style="position:absolute;left:-9999px;">Pesquisar</label>
+    <input type="text" id="searchInput" class="search-input" placeholder="Pesquisar por sentimento ou palavra — raiva, comida, trabalho…" oninput="filterSituations()">
   </div>
 
-  <div class="grid-container" id="sinGrid"></div>
+  <ul class="sin-list" id="sinList" role="list"></ul>
 
   <div class="random-bar">
-    <button class="action-btn secondary" id="randomBtn" onclick="getRandomReflection()" style="padding: 12px 20px; font-size: 0.95rem;">🎲 Reflexão do Dia (Aleatória)</button>
+    <button class="action-btn secondary" id="randomBtn" onclick="getRandomReflection()">Reflexão do dia, ao acaso</button>
   </div>
 
-  <div id="contentArea" class="content-area">
+  <section id="contentArea" class="content-area" aria-live="polite">
     <h2 id="sinTitle">Título</h2>
     <div id="virtueBadge" class="virtue-badge"></div>
-    <p id="promptText" style="margin-bottom: 15px; color: var(--text-muted);">Qual destas situações melhor descreve o que você sentiu?</p>
+    <p class="prompt-text" id="promptText">Qual destas situações mais se parece com o que você sentiu?</p>
 
     <div id="subOptions" class="sub-options"></div>
 
     <div id="resultBox" class="result-box">
-      <h3 id="resultHeader">Passagem / Reflexão Recomendada:</h3>
       <p id="resultText"></p>
       <div class="btn-group">
-        <button class="action-btn" id="saveBookmarkBtn" onclick="saveCurrentBookmark()">🔖 Guardar para refletir</button>
-        <button class="action-btn secondary" id="shareBtn" onclick="copyReflection()">📋 Copiar Reflexão</button>
+        <button class="action-btn" id="saveBookmarkBtn" onclick="saveCurrentBookmark()">Guardar para refletir</button>
+        <button class="action-btn secondary" id="shareBtn" onclick="copyReflection()">Copiar reflexão</button>
       </div>
     </div>
-  </div>
+  </section>
 
-  <div class="journal-area">
-    <h2 id="journalTitle">📓 Seu Histórico & Marcadores Diários</h2>
-    <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 15px;" id="journalDesc">
-      Acompanhe seu progresso diário de forma totalmente privada.
-    </p>
-
-    <div class="journal-form">
-      <input type="date" id="logDate" class="journal-input">
-      <select id="logSin" class="journal-select">
-        <option value="Nenhum">Nenhum pecado / Dia em paz</option>
-        <option value="Orgulho">Orgulho</option>
-        <option value="Ganância">Ganância</option>
-        <option value="Luxúria">Luxúria</option>
-        <option value="Inveja">Inveja</option>
-        <option value="Gula">Gula</option>
-        <option value="Ira">Ira</option>
-        <option value="Preguiça">Preguiça</option>
-      </select>
-      <select id="logMood" class="journal-select">
-        <option value="🕊️ Sereno">🕊️ Sereno</option>
-        <option value="⚡ Em conflito">⚡ Em conflito</option>
-        <option value="🌱 Em busca de paz">🌱 Em busca de paz</option>
-      </select>
-      <button class="action-btn" id="addLogBtn" onclick="addDailyLog()">Registrar Dia</button>
+  <section class="journal-area">
+    <div class="journal-head">
+      <h2>Seu histórico</h2>
+      <span class="streak" id="streakBadge" hidden></span>
     </div>
+    <p class="journal-desc">Um registro privado do seu progresso dia a dia — visível só para você.</p>
 
+    <form class="journal-form" onsubmit="event.preventDefault(); addDailyLog();">
+      <div class="field">
+        <label for="logDate">Data</label>
+        <input type="date" id="logDate" class="journal-input">
+      </div>
+      <div class="field">
+        <label for="logMood">Como foi o dia</label>
+        <select id="logMood" class="journal-select">
+          <option value="🕊️ Sereno">🕊️ Sereno</option>
+          <option value="⚡ Em conflito">⚡ Em conflito</option>
+          <option value="🌱 Em busca de paz">🌱 Em busca de paz</option>
+        </select>
+      </div>
+      <div class="field full">
+        <label for="logSin">Pecado enfrentado</label>
+        <select id="logSin" class="journal-select">
+          <option value="Nenhum">Nenhum — dia em paz</option>
+          <option value="Orgulho">Orgulho</option>
+          <option value="Ganância">Ganância</option>
+          <option value="Luxúria">Luxúria</option>
+          <option value="Inveja">Inveja</option>
+          <option value="Gula">Gula</option>
+          <option value="Ira">Ira</option>
+          <option value="Preguiça">Preguiça</option>
+        </select>
+      </div>
+      <button type="submit" class="action-btn" id="addLogBtn">Registrar dia</button>
+    </form>
+
+    <p class="journal-empty" id="journalEmpty" hidden>Nenhum registro ainda. Seu primeiro dia começa aqui.</p>
     <ul id="journalList" class="journal-list"></ul>
-  </div>
+  </section>
 
-  <!-- Modal de Login -->
-  <div class="modal-overlay" id="authModal">
-    <div class="modal-card">
-      <h2 style="color: var(--accent-color);">Minha Conta</h2>
-      <p style="font-size: 0.85rem; color: var(--text-muted);">Sincronize suas reflexões em nuvem.</p>
-      <input type="email" id="authEmail" class="journal-input" placeholder="Seu e-mail">
-      <input type="password" id="authPassword" class="journal-input" placeholder="Sua senha">
-      <div style="display:flex; gap: 10px;">
-        <button class="action-btn" style="flex:1;" onclick="handleEmailLogin()">Entrar</button>
-        <button class="action-btn secondary" style="flex:1;" onclick="handleEmailSignUp()">Cadastrar</button>
-      </div>
-      <button class="action-btn secondary" onclick="handleGoogleLogin()">🌐 Entrar com Google</button>
-      <button class="delete-btn" onclick="closeAuthModal()" style="margin-top: 5px;">Cancelar</button>
+  <footer class="note">Nada do que você escreve aqui é compartilhado, a menos que você escolha entrar com uma conta.</footer>
+</div>
+
+<!-- Modal de Login -->
+<div class="modal-overlay" id="authModal" role="dialog" aria-modal="true" aria-labelledby="authTitle">
+  <div class="modal-card">
+    <h2 id="authTitle">Minha conta</h2>
+    <p class="fine">Sincronize suas reflexões entre dispositivos.</p>
+    <div class="field">
+      <label for="authEmail">E-mail</label>
+      <input type="email" id="authEmail" class="journal-input" placeholder="voce@exemplo.com">
+    </div>
+    <div class="field">
+      <label for="authPassword">Senha</label>
+      <input type="password" id="authPassword" class="journal-input" placeholder="••••••••">
+    </div>
+    <div class="modal-row">
+      <button class="action-btn" id="authLoginBtn" onclick="handleEmailLogin()">Entrar</button>
+      <button class="action-btn secondary" id="authSignupBtn" onclick="handleEmailSignUp()">Cadastrar</button>
+    </div>
+    <button class="action-btn secondary" id="authGoogleBtn" onclick="handleGoogleLogin()">Entrar com Google</button>
+    <button class="modal-close" onclick="closeAuthModal()">Cancelar</button>
+  </div>
+</div>
+
+<!-- Modal de confirmação -->
+<div class="modal-overlay" id="confirmModal" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
+  <div class="modal-card">
+    <h2 id="confirmTitle">Remover registro?</h2>
+    <p class="fine" id="confirmText">Essa ação não pode ser desfeita.</p>
+    <div class="modal-row">
+      <button class="action-btn secondary" onclick="closeConfirmModal()">Cancelar</button>
+      <button class="action-btn" style="background:var(--danger); color:#fff;" id="confirmYesBtn">Remover</button>
     </div>
   </div>
+</div>
 
-  <script>
-    // Banco de dados dos Pecados
-    const sinsData = {
-      "Orgulho": {
-        virtue: "Virtude oposta: Humildade",
-        items: [
-          { sit: "Sentir-se superior aos outros por conquistas ou bens", ref: "Provérbios 16:18 — 'A vaidade precede a ruína, e o orgulho precede a queda.' Cultive a humildade reconhecendo o valor alheio." },
-          { sit: "Dificuldade em reconhecer erros ou pedir desculpas", ref: "Tiago 4:6 — 'Deus resiste aos soberbos, mas dá graça aos humildes.' Admitir falhas é sinal de força moral e maturidade." },
-          { sit: "Recusar ajuda por achar que sabe fazer tudo sozinho", ref: "Ecclesiastes 4:9-10 — 'Melhor é serem dois do que um. Se um cair, o outro levanta o seu companheiro.' Aceitar apoio aproxima as pessoas." },
-          { sit: "Procurar atenção ou elogios constantes para tudo o que faz", ref: "Mateus 6:1 — 'Guardai-vos de fazer as vossas boas obras diante dos homens, para serdes vistos por eles.' O verdadeiro mérito não precisa de espetáculo." },
-          { sit: "Menosprezar ou desvalorizar as opiniões e sentimentos alheios", ref: "Filipenses 2:3 — 'Nada façais por contenda ou por vanglória, mas por humildade; considerando os outros superiores a si mesmos.'" },
-          { sit: "Guardar ressentimento por não ter o seu ego alimentado", ref: "Galatas 6:3 — 'Porque, se alguém cuida ser alguma coisa, não sendo nada, engana-se a si mesmo.'" },
-          { sit: "Acreditar que está acima das regras ou das consequências", ref: "1 Coríntios 10:12 — 'Aquele, pois, que cuida estar em pé, olhe não caia.'" }
-        ]
-      },
-      "Ganância": {
-        virtue: "Virtude oposta: Generosidade",
-        items: [
-          { sit: "Desejo desmedido de acumular riquezas e bens materiais", ref: "1 Timóteo 6:10 — 'O amor ao dinheiro é a raiz de todos os males.' Lembre-se de que a verdadeira riqueza reside nas relações e na paz." },
-          { sit: "Recusa em ajudar quem precisa por apego material", ref: "Provérbios 11:24 — 'Quem dá com generosidade torna-se mais rico; quem retém o que deve fica na miséria.'" },
-          { sit: "Invejar o património ou o estatuto financeiro alheio", ref: "Hebreus 13:5 — 'Sejam vossos costumes sem avareza, contentando-vos com o que tendes.'" },
-          { sit: "Colocar o lucro ou vantagem pessoal acima da ética e amizade", ref: "Marcos 8:36 — 'Pois que aproveitaria ao homem ganhar todo o mundo e perder a sua alma?'" },
-          { sit: "Medo constante de perder dinheiro ou ficar sem recursos", ref: "Mateus 6:25 — 'Não andeis ansiosos pela vossa vida, quanto ao que haveis de comer ou beber... Olhai para as aves do céu.'" },
-          { sit: "Trabalhar compulsivamente negligenciando saúde e família por ganhos", ref: "Salmos 127:2 — 'Inútil vos será levantar de madrugada, repousar tarde... pois aos seus amados dá Deus o sono.'" },
-          { sit: "Explorar ou tirar vantagem indevida de alguém em negociações", ref: "Provérbios 22:16 — 'O que oprime ao pobre para se engrandecer a si mesmo... certamente virá a necessitar.'" }
-        ]
-      },
-      "Luxúria": {
-        virtue: "Virtude oposta: Castidade / Domínio Próprio",
-        items: [
-          { sit: "Ver pessoas como meros objetos de desejo ou satisfação", ref: "1 Coríntios 6:19-20 — Respeite seu corpo e o dos outros com dignidade e autocontrole." },
-          { sit: "Pensamentos compulsivos que prejudicam o foco moral e pessoal", ref: "Filipenses 4:8 — 'Tudo o que é verdadeiro, nobre e puro, nisso pensai.'" },
-          { sit: "Buscar prazer instantâneo em detrimento de compromissos reais", ref: "Galatas 5:16 — 'Andai em Espírito e não cumprireis a cobiça da carne.'" },
-          { sit: "Consumo excessivo de conteúdos apelativos ou pornográficos", ref: "Salmos 101:3 — 'Não porei coisa má diante dos meus olhos.' Mantenha a mente limpa e protegida." },
-          { sit: "Fantasiar com relacionamentos alheios promovendo a infidelidade", ref: "Mateus 5:28 — 'Qualquer que olhar para uma mulher com cobiça já em seu coração cometeu adultério.'" },
-          { sit: "Usar a sedução de forma manipuladora para obter vantagens", ref: "1 Tessalonicenses 4:3-5 — 'Que cada um de vós saiba possuir o seu vaso em santificação e honra, não na paixão da concupiscência.'" },
-          { sit: "Incapaz de manter fidelidade e respeito numa relação afetuosa", ref: "Provérbios 4:23 — 'Sobre tudo o que se deve guardar, guarda o teu coração, porque dele procedem as saídas da vida.'" }
-        ]
-      },
-      "Inveja": {
-        virtue: "Virtude oposta: Caridade / Benevolência",
-        items: [
-          { sit: "Tristeza pelo sucesso ou felicidade alheia", ref: "Gálatas 5:26 — 'Não nos tornemos invejosos uns dos outros.' Alegre-se com as conquistas do próximo." },
-          { sit: "Desejo oculto de que o outro perca o que conquistou", ref: "Provérbios 14:30 — 'O coração em paz dá vida ao corpo, mas a inveja corrói os ossos.'" },
-          { sit: "Comparar-se constantemente com os outros e sentir-se inferiorizado", ref: "2 Coríntios 10:12 — 'Eles, medindo-se consigo mesmos e comparando-se consigo mesmos, revelam falta de entendimento.'" },
-          { sit: "Fazer comentários depreciativos para diminuir o brilho de alguém", ref: "Tiago 3:16 — 'Onde há inveja e sentimento faccioso, aí há perturbação e toda a obra perversa.'" },
-          { sit: "Incapacidade de elogiar sinceramente as qualidades do próximo", ref: "Romanos 12:15 — 'Alegrai-vos com os que se alegram e chorai com os que choram.'" },
-          { sit: "Sentir frustração ao ver outras pessoas a receberem reconhecimento", ref: "1 Pedro 2:1 — 'Despojando-vos, pois, de toda a malícia, e de todo o engano, e fingimentos, e invejas...'" },
-          { sit: "Acreditar que a vida é injusta só porque os outros prosperam", ref: "Salmos 37:1 — 'Não te indignes por causa dos malfeitores, nem tenhas inveja dos que praticam a iniquidade.'" }
-        ]
-      },
-      "Gula": {
-        virtue: "Virtude oposta: Temperança",
-        items: [
-          { sit: "Consumo excessivo de comida ou bebida sem necessidade física", ref: "Provérbios 23:20-21 — Pratique o equilíbrio físico e espiritual em seus hábitos diários." },
-          { sit: "Buscar no excesso alimentar o alívio para ansiedade e tédio", ref: "1 Coríntios 10:31 — 'Quer comais, quer bebeis, fazei tudo para a glória de Deus.'" },
-          { sit: "Desperdiçar recursos com excessos e banquetes extravagantes", ref: "Lucas 16:19-21 — Lembre-se daqueles que carecem do básico antes de ceder ao exagero." },
-          { sit: "Impaciência e irritação quando a refeição atrasa ou não agrada", ref: "Gálatas 5:22-23 — O fruto do Espírito inclui amor, paz, paciência e domínio próprio." },
-          { sit: "Comer compulsivamente até sentir desconforto físico", ref: "Proverbios 25:16 — 'Achaste mel? Come somente o que te basta, para que porventura não te fartes dele e o vomites.'" },
-          { sit: "Fazer da comida e do prazer sensorial o foco principal do dia", ref: "Filipenses 3:19 — 'O fim deles é a ruína; o deus deles é o ventre... que só pensam nas coisas terrenas.'" },
-          { sit: "Negar-se a partilhar o alimento ou recursos com quem tem fome", ref: "Isaías 58:7 — 'Porventura não é também que repartas o teu pão com o faminto?'" }
-        ]
-      },
-      "Ira": {
-        virtue: "Virtude oposta: Paciência",
-        items: [
-          { sit: "Explosões frequentes de raiva e agressividade verbal ou física", ref: "Tiago 1:19-20 — 'Todo homem seja pronto para ouvir, tardio para falar, tardio para se irar.'" },
-          { sit: "Guardar rancor acumulado e desejar vingança contra alguém", ref: "Efésios 4:26 — 'Não se ponha o sol sobre a vossa ira.' Perdoe para libertar o próprio coração." },
-          { sit: "Perder o controlo por contrariedades pequenas do dia a dia", ref: "Provérbios 16:32 — 'Melhor é o que tarda em irar-se do que o poderoso, e o que controla o seu ânimo do que o que toma uma cidade.'" },
-          { sit: "Uso de palavras duras ou insultos no calor de uma discussão", ref: "Provérbios 15:1 — 'A resposta branda desvia o furor, mas a palavra dura suscita a ira.'" },
-          { sit: "Recusar reconciliar-se ou aceitar pedidos de desculpas", ref: "Colossenses 3:13 — 'Suportando-vos uns aos outros, e perdoando-vos uns aos outros, se algum tiver queixa contra outro.'" },
-          { sit: "Alimentar maus pensamentos sobre pessoas que o prejudicaram", ref: "Romanos 12:19 — 'Não vos vingueis a vós mesmos, amados, mas dai lugar à ira, porque está escrito: Minha é a vingança; eu recompensarei, diz o Senhor.'" },
-          { sit: "Sentir prazer em ver quem o ofendeu a passar por dificuldades", ref: "Provérbios 24:17 — 'Quando cair o teu inimigo, não te me alegres, nem se regozije o teu coração quando ele tropeçar.'" }
-        ]
-      },
-      "Preguiça": {
-        virtue: "Virtude oposta: Diligência",
-        items: [
-          { sit: "Procrastinação excessiva e adiamento constante dos deveres", ref: "Provérbios 6:6-8 — 'Vai ter com a formiga, ó preguiçoso; olha para os seus caminhos e sê sábio.'" },
-          { sit: "Apatia e falta de cuidado com a própria vida espiritual e física", ref: "Romanos 12:11 — 'Não sejais vagarosos no cuidado; sede fervorosos no espírito.'" },
-          { sit: "Deixar que os outros façam o trabalho que é da sua responsabilidade", ref: "2 Tessalonicenses 3:10 — 'Se alguém não quer trabalhar, também não coma.'" },
-          { sit: "Fazer as tarefas sem capricho ou de forma desleixada", ref: "Colossenses 3:23 — 'E tudo quanto fizerdes, fazei-o de todo o coração, como ao Senhor, e não aos homens.'" },
-          { sit: "Inventar desculpas frequentes para não cumprir metas ou prazos", ref: "Provérbios 22:13 — 'Diz o preguiçoso: Um leão está lá fora; serei morto no meio das ruas.'" },
-          { sit: "Falta de iniciativa para mudar uma situação má na sua vida", ref: "Provérbios 13:4 — 'O que a alma do preguiçoso deseja, ele não alcança, mas a alma dos diligentes se engorda.'" },
-          { sit: "Acomodação num estilo de vida passivo sem objetivos ou propósitos", ref: "Efésios 5:15-16 — 'Vede prudentemente como andais, não como néscios, mas como sábios, remindo o tempo.'" }
-        ]
-      }
+<div class="toast-stack" id="toastStack" aria-live="polite"></div>
+
+<script>
+  // ---------------------------------------------------------------
+  // Dados
+  // ---------------------------------------------------------------
+  const sinsData = {
+    "Orgulho": {
+      virtue: "Virtude oposta: Humildade",
+      items: [
+        { sit: "Sentir-se superior aos outros por conquistas ou bens", ref: "Provérbios 16:18 — “A vaidade precede a ruína, e o orgulho precede a queda.” Cultive a humildade reconhecendo o valor alheio." },
+        { sit: "Dificuldade em reconhecer erros ou pedir desculpas", ref: "Tiago 4:6 — “Deus resiste aos soberbos, mas dá graça aos humildes.” Admitir falhas é sinal de força moral e maturidade." },
+        { sit: "Recusar ajuda por achar que sabe fazer tudo sozinho", ref: "Eclesiastes 4:9-10 — “Melhor é serem dois do que um. Se um cair, o outro levanta o seu companheiro.” Aceitar apoio aproxima as pessoas." },
+        { sit: "Procurar atenção ou elogios constantes para tudo o que faz", ref: "Mateus 6:1 — “Guardai-vos de fazer as vossas boas obras diante dos homens, para serdes vistos por eles.” O verdadeiro mérito não precisa de espetáculo." },
+        { sit: "Menosprezar ou desvalorizar as opiniões e sentimentos alheios", ref: "Filipenses 2:3 — “Nada façais por contenda ou por vanglória, mas por humildade; considerando os outros superiores a si mesmos.”" },
+        { sit: "Guardar ressentimento por não ter o seu ego alimentado", ref: "Gálatas 6:3 — “Se alguém cuida ser alguma coisa, não sendo nada, engana-se a si mesmo.”" },
+        { sit: "Acreditar que está acima das regras ou das consequências", ref: "1 Coríntios 10:12 — “Aquele, pois, que cuida estar em pé, olhe não caia.”" }
+      ]
+    },
+    "Ganância": {
+      virtue: "Virtude oposta: Generosidade",
+      items: [
+        { sit: "Desejo desmedido de acumular riquezas e bens materiais", ref: "1 Timóteo 6:10 — “O amor ao dinheiro é a raiz de todos os males.” A verdadeira riqueza reside nas relações e na paz." },
+        { sit: "Recusa em ajudar quem precisa por apego material", ref: "Provérbios 11:24 — “Quem dá com generosidade torna-se mais rico; quem retém o que deve fica na miséria.”" },
+        { sit: "Invejar o património ou o estatuto financeiro alheio", ref: "Hebreus 13:5 — “Sejam vossos costumes sem avareza, contentando-vos com o que tendes.”" },
+        { sit: "Colocar o lucro ou vantagem pessoal acima da ética e amizade", ref: "Marcos 8:36 — “Que aproveitaria ao homem ganhar todo o mundo e perder a sua alma?”" },
+        { sit: "Medo constante de perder dinheiro ou ficar sem recursos", ref: "Mateus 6:25 — “Não andeis ansiosos pela vossa vida… Olhai para as aves do céu.”" },
+        { sit: "Trabalhar compulsivamente negligenciando saúde e família por ganhos", ref: "Salmos 127:2 — “Inútil vos será levantar de madrugada… pois aos seus amados dá Deus o sono.”" },
+        { sit: "Explorar ou tirar vantagem indevida de alguém em negociações", ref: "Provérbios 22:16 — “O que oprime ao pobre para se engrandecer a si mesmo… certamente virá a necessitar.”" }
+      ]
+    },
+    "Luxúria": {
+      virtue: "Virtude oposta: Domínio próprio",
+      items: [
+        { sit: "Ver pessoas como meros objetos de desejo ou satisfação", ref: "1 Coríntios 6:19-20 — Respeite seu corpo e o dos outros com dignidade e autocontrole." },
+        { sit: "Pensamentos compulsivos que prejudicam o foco moral e pessoal", ref: "Filipenses 4:8 — “Tudo o que é verdadeiro, nobre e puro, nisso pensai.”" },
+        { sit: "Buscar prazer instantâneo em detrimento de compromissos reais", ref: "Gálatas 5:16 — “Andai em Espírito e não cumprireis a cobiça da carne.”" },
+        { sit: "Consumo excessivo de conteúdos apelativos ou pornográficos", ref: "Salmos 101:3 — “Não porei coisa má diante dos meus olhos.” Mantenha a mente limpa e protegida." },
+        { sit: "Fantasiar com relacionamentos alheios promovendo a infidelidade", ref: "Mateus 5:28 — “Qualquer que olhar para uma mulher com cobiça já cometeu adultério em seu coração.”" },
+        { sit: "Usar a sedução de forma manipuladora para obter vantagens", ref: "1 Tessalonicenses 4:3-5 — “Que cada um saiba possuir o seu vaso em santificação e honra.”" },
+        { sit: "Dificuldade em manter fidelidade e respeito numa relação afetiva", ref: "Provérbios 4:23 — “Sobre tudo o que se deve guardar, guarda o teu coração, porque dele procedem as saídas da vida.”" }
+      ]
+    },
+    "Inveja": {
+      virtue: "Virtude oposta: Benevolência",
+      items: [
+        { sit: "Tristeza pelo sucesso ou felicidade alheia", ref: "Gálatas 5:26 — “Não nos tornemos invejosos uns dos outros.” Alegre-se com as conquistas do próximo." },
+        { sit: "Desejo oculto de que o outro perca o que conquistou", ref: "Provérbios 14:30 — “O coração em paz dá vida ao corpo, mas a inveja corrói os ossos.”" },
+        { sit: "Comparar-se constantemente com os outros e sentir-se inferiorizado", ref: "2 Coríntios 10:12 — “Medindo-se consigo mesmos e comparando-se consigo mesmos, revelam falta de entendimento.”" },
+        { sit: "Fazer comentários depreciativos para diminuir o brilho de alguém", ref: "Tiago 3:16 — “Onde há inveja e sentimento faccioso, aí há perturbação e toda a obra perversa.”" },
+        { sit: "Incapacidade de elogiar sinceramente as qualidades do próximo", ref: "Romanos 12:15 — “Alegrai-vos com os que se alegram e chorai com os que choram.”" },
+        { sit: "Frustração ao ver outras pessoas receberem reconhecimento", ref: "1 Pedro 2:1 — “Despojando-vos de toda a malícia, e de todo o engano, e fingimentos, e invejas.”" },
+        { sit: "Acreditar que a vida é injusta só porque os outros prosperam", ref: "Salmos 37:1 — “Não te indignes por causa dos malfeitores, nem tenhas inveja dos que praticam a iniquidade.”" }
+      ]
+    },
+    "Gula": {
+      virtue: "Virtude oposta: Temperança",
+      items: [
+        { sit: "Consumo excessivo de comida ou bebida sem necessidade física", ref: "Provérbios 23:20-21 — Pratique o equilíbrio físico e espiritual em seus hábitos diários." },
+        { sit: "Buscar no excesso alimentar o alívio para ansiedade e tédio", ref: "1 Coríntios 10:31 — “Quer comais, quer bebais, fazei tudo para a glória de Deus.”" },
+        { sit: "Desperdiçar recursos com excessos e banquetes extravagantes", ref: "Lucas 16:19-21 — Lembre-se daqueles que carecem do básico antes de ceder ao exagero." },
+        { sit: "Impaciência e irritação quando a refeição atrasa ou não agrada", ref: "Gálatas 5:22-23 — O fruto do Espírito inclui amor, paz, paciência e domínio próprio." },
+        { sit: "Comer compulsivamente até sentir desconforto físico", ref: "Provérbios 25:16 — “Achaste mel? Come somente o que te basta, para que não te fartes dele e o vomites.”" },
+        { sit: "Fazer da comida e do prazer sensorial o foco principal do dia", ref: "Filipenses 3:19 — “O fim deles é a ruína; o deus deles é o ventre… só pensam nas coisas terrenas.”" },
+        { sit: "Negar-se a partilhar o alimento ou recursos com quem tem fome", ref: "Isaías 58:7 — “Porventura não é também que repartas o teu pão com o faminto?”" }
+      ]
+    },
+    "Ira": {
+      virtue: "Virtude oposta: Paciência",
+      items: [
+        { sit: "Explosões frequentes de raiva e agressividade verbal ou física", ref: "Tiago 1:19-20 — “Todo homem seja pronto para ouvir, tardio para falar, tardio para se irar.”" },
+        { sit: "Guardar rancor acumulado e desejar vingança contra alguém", ref: "Efésios 4:26 — “Não se ponha o sol sobre a vossa ira.” Perdoe para libertar o próprio coração." },
+        { sit: "Perder o controlo por contrariedades pequenas do dia a dia", ref: "Provérbios 16:32 — “Melhor é o que tarda em irar-se do que o poderoso, e o que controla o seu ânimo do que o que toma uma cidade.”" },
+        { sit: "Uso de palavras duras ou insultos no calor de uma discussão", ref: "Provérbios 15:1 — “A resposta branda desvia o furor, mas a palavra dura suscita a ira.”" },
+        { sit: "Recusar reconciliar-se ou aceitar pedidos de desculpas", ref: "Colossenses 3:13 — “Suportando-vos uns aos outros, e perdoando-vos uns aos outros.”" },
+        { sit: "Alimentar maus pensamentos sobre pessoas que o prejudicaram", ref: "Romanos 12:19 — “Não vos vingueis a vós mesmos, amados… Minha é a vingança, diz o Senhor.”" },
+        { sit: "Sentir prazer em ver quem o ofendeu passar por dificuldades", ref: "Provérbios 24:17 — “Quando cair o teu inimigo, não te alegres, nem se regozije o teu coração quando ele tropeçar.”" }
+      ]
+    },
+    "Preguiça": {
+      virtue: "Virtude oposta: Diligência",
+      items: [
+        { sit: "Procrastinação excessiva e adiamento constante dos deveres", ref: "Provérbios 6:6-8 — “Vai ter com a formiga, ó preguiçoso; olha para os seus caminhos e sê sábio.”" },
+        { sit: "Apatia e falta de cuidado com a própria vida espiritual e física", ref: "Romanos 12:11 — “Não sejais vagarosos no cuidado; sede fervorosos no espírito.”" },
+        { sit: "Deixar que os outros façam o trabalho que é da sua responsabilidade", ref: "2 Tessalonicenses 3:10 — “Se alguém não quer trabalhar, também não coma.”" },
+        { sit: "Fazer as tarefas sem capricho ou de forma desleixada", ref: "Colossenses 3:23 — “Tudo quanto fizerdes, fazei-o de todo o coração, como ao Senhor.”" },
+        { sit: "Inventar desculpas frequentes para não cumprir metas ou prazos", ref: "Provérbios 22:13 — “Diz o preguiçoso: um leão está lá fora; serei morto no meio das ruas.”" },
+        { sit: "Falta de iniciativa para mudar uma situação má na sua vida", ref: "Provérbios 13:4 — “O que a alma do preguiçoso deseja, ele não alcança, mas a alma dos diligentes se engorda.”" },
+        { sit: "Acomodação num estilo de vida passivo sem objetivos ou propósitos", ref: "Efésios 5:15-16 — “Vede prudentemente como andais, não como néscios, mas como sábios, remindo o tempo.”" }
+      ]
+    }
+  };
+
+  const ROMAN = ["I","II","III","IV","V","VI","VII"];
+
+  let candleLit = false;
+  let currentPassage = '';
+  let pendingDeleteId = null;
+
+  // ---------------------------------------------------------------
+  // Toasts
+  // ---------------------------------------------------------------
+  function showToast(message){
+    const stack = document.getElementById('toastStack');
+    const el = document.createElement('div');
+    el.className = 'toast';
+    el.textContent = message;
+    stack.appendChild(el);
+    setTimeout(() => el.remove(), 3200);
+  }
+
+  // ---------------------------------------------------------------
+  // Lista de pecados
+  // ---------------------------------------------------------------
+  function renderList(filterTerm){
+    const list = document.getElementById('sinList');
+    list.innerHTML = '';
+    const term = (filterTerm || '').toLowerCase();
+    let shown = 0;
+
+    Object.keys(sinsData).forEach((sinName, idx) => {
+      const sinObj = sinsData[sinName];
+      const matches = !term ||
+        sinName.toLowerCase().includes(term) ||
+        sinObj.items.some(item => item.sit.toLowerCase().includes(term) || item.ref.toLowerCase().includes(term));
+      if(!matches) return;
+      shown++;
+
+      const li = document.createElement('li');
+      const btn = document.createElement('button');
+      btn.className = 'sin-row';
+      btn.setAttribute('aria-expanded', 'false');
+      btn.innerHTML = `
+        <span class="sin-num">${ROMAN[idx]}</span>
+        <span class="sin-name">${sinName}</span>
+        <span class="sin-virtue-hint">${sinObj.virtue.replace('Virtude oposta: ','')}</span>
+        <span class="chev">›</span>
+      `;
+      btn.onclick = () => selectSin(sinName, btn);
+      li.appendChild(btn);
+      list.appendChild(li);
+    });
+
+    if(shown === 0){
+      const li = document.createElement('li');
+      li.className = 'no-results';
+      li.textContent = 'Nada encontrado. Tente outra palavra.';
+      list.appendChild(li);
+    }
+  }
+
+  function selectSin(sinName, triggerBtn){
+    const sin = sinsData[sinName];
+    if(!sin) return;
+
+    document.querySelectorAll('.sin-row').forEach(b => b.setAttribute('aria-expanded', b === triggerBtn ? 'true' : 'false'));
+
+    document.getElementById('sinTitle').textContent = sinName;
+    document.getElementById('virtueBadge').textContent = sin.virtue;
+    document.getElementById('promptText').textContent = 'Qual destas situações mais se parece com o que você sentiu?';
+
+    const subContainer = document.getElementById('subOptions');
+    subContainer.innerHTML = '';
+    sin.items.forEach(item => {
+      const btn = document.createElement('button');
+      btn.className = 'sub-btn';
+      btn.textContent = item.sit;
+      btn.onclick = () => {
+        document.querySelectorAll('.sub-btn').forEach(b => b.classList.remove('chosen'));
+        btn.classList.add('chosen');
+        showResult(item.ref, sinName);
+      };
+      subContainer.appendChild(btn);
+    });
+
+    document.getElementById('resultBox').style.display = 'none';
+    const area = document.getElementById('contentArea');
+    area.style.display = 'block';
+    area.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function showResult(refText, sinName){
+    currentPassage = refText;
+    currentSinForBookmark = sinName || '';
+    document.getElementById('resultText').textContent = refText;
+    document.getElementById('resultBox').style.display = 'block';
+  }
+  let currentSinForBookmark = '';
+
+  function getRandomReflection(){
+    const sinKeys = Object.keys(sinsData);
+    const randomSinKey = sinKeys[Math.floor(Math.random() * sinKeys.length)];
+    const items = sinsData[randomSinKey].items;
+    const randomItem = items[Math.floor(Math.random() * items.length)];
+
+    document.getElementById('sinTitle').textContent = randomSinKey;
+    document.getElementById('virtueBadge').textContent = sinsData[randomSinKey].virtue;
+    document.getElementById('promptText').textContent = 'Reflexão do dia, escolhida ao acaso:';
+    document.getElementById('subOptions').innerHTML = `<p class="random-situation">“${randomItem.sit}”</p>`;
+    showResult(randomItem.ref, randomSinKey);
+
+    const area = document.getElementById('contentArea');
+    area.style.display = 'block';
+    area.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function filterSituations(){
+    renderList(document.getElementById('searchInput').value);
+  }
+
+  function copyReflection(){
+    if(!currentPassage) return;
+    navigator.clipboard.writeText(currentPassage)
+      .then(() => showToast('Reflexão copiada.'))
+      .catch(() => showToast('Não foi possível copiar.'));
+  }
+
+  function toggleCandle(){
+    candleLit = !candleLit;
+    const btn = document.getElementById('candleBtn');
+    const flame = document.getElementById('flameIcon');
+    btn.classList.toggle('lit', candleLit);
+    btn.setAttribute('aria-pressed', String(candleLit));
+    btn.textContent = candleLit ? 'Vela acesa' : 'Acender vela';
+    flame.classList.toggle('lit', candleLit);
+  }
+
+  // ---------------------------------------------------------------
+  // Autenticação (Firebase) + modo local
+  // ---------------------------------------------------------------
+  let currentUser = null;
+  let auth = null;
+  let db = null;
+
+  try{
+    const firebaseConfig = {
+      apiKey: "AIzaSyCriuX-MW3MM4MZ1n-aLxH5XpK8tC9-TM",
+      authDomain: "reflexao-7-pecados.firebaseapp.com",
+      projectId: "reflexao-7-pecados",
+      storageBucket: "reflexao-7-pecados.firebasestorage.app",
+      messagingSenderId: "584317997328",
+      appId: "1:584317997328:web:bbc1bb477153575519595"
     };
 
-    let candleLit = false;
-    let currentPassage = '';
+    firebase.initializeApp(firebaseConfig);
+    auth = firebase.auth();
+    db = firebase.firestore();
 
-    // Inicialização da Tela
-    function renderGrid() {
-      const grid = document.getElementById('sinGrid');
-      grid.innerHTML = '';
-      Object.keys(sinsData).forEach(sin => {
-        const btn = document.createElement('button');
-        btn.className = 'sin-btn';
-        btn.innerText = sin;
-        btn.onclick = () => selectSin(sin);
-        grid.appendChild(btn);
-      });
-    }
-
-    function selectSin(sinName) {
-      const sin = sinsData[sinName];
-      if (!sin) return;
-
-      document.getElementById('sinTitle').innerText = sinName;
-      document.getElementById('virtueBadge').innerText = sin.virtue;
-      const subContainer = document.getElementById('subOptions');
-      subContainer.innerHTML = '';
-
-      sin.items.forEach(item => {
-        const btn = document.createElement('button');
-        btn.className = 'sub-btn';
-        btn.innerText = item.sit;
-        btn.onclick = () => showResult(item.ref);
-        subContainer.appendChild(btn);
-      });
-
-      document.getElementById('resultBox').style.display = 'none';
-      document.getElementById('contentArea').style.display = 'block';
-      document.getElementById('contentArea').scrollIntoView({ behavior: 'smooth' });
-    }
-
-    function showResult(refText) {
-      currentPassage = refText;
-      document.getElementById('resultText').innerText = refText;
-      document.getElementById('resultBox').style.display = 'block';
-    }
-
-    function toggleCandle() {
-      candleLit = !candleLit;
-      const btn = document.getElementById('candleBtn');
-      if (candleLit) {
-        btn.classList.add('active');
-        btn.innerText = '🔥 Vela Acesa';
+    auth.onAuthStateChanged(user => {
+      currentUser = user;
+      const statusText = document.getElementById('userStatus');
+      const loginBtn = document.getElementById('loginBtn');
+      if(user){
+        statusText.textContent = user.email || 'Conectado';
+        loginBtn.textContent = 'Sair';
+        loginBtn.onclick = () => auth.signOut().then(() => showToast('Sessão encerrada.'));
       } else {
-        btn.classList.remove('active');
-        btn.innerText = '🕯️ Acender Vela';
-      }
-    }
-
-    function getRandomReflection() {
-      const sinKeys = Object.keys(sinsData);
-      const randomSinKey = sinKeys[Math.floor(Math.random() * sinKeys.length)];
-      const items = sinsData[randomSinKey].items;
-      const randomItem = items[Math.floor(Math.random() * items.length)];
-
-      document.getElementById('sinTitle').innerText = randomSinKey + " (Reflexão Aleatória)";
-      document.getElementById('virtueBadge').innerText = sinsData[randomSinKey].virtue;
-      document.getElementById('subOptions').innerHTML = `<p style="padding: 10px; color: var(--text-muted);">Situação: "${randomItem.sit}"</p>`;
-      showResult(randomItem.ref);
-      document.getElementById('contentArea').style.display = 'block';
-      document.getElementById('contentArea').scrollIntoView({ behavior: 'smooth' });
-    }
-
-    function filterSituations() {
-      const term = document.getElementById('searchInput').value.toLowerCase();
-      if (!term) { renderGrid(); return; }
-
-      const grid = document.getElementById('sinGrid');
-      grid.innerHTML = '';
-
-      Object.keys(sinsData).forEach(sinName => {
-        const hasMatch = sinsData[sinName].items.some(item => 
-          item.sit.toLowerCase().includes(term) || item.ref.toLowerCase().includes(term)
-        ) || sinName.toLowerCase().includes(term);
-
-        if (hasMatch) {
-          const btn = document.createElement('button');
-          btn.className = 'sin-btn';
-          btn.innerText = sinName;
-          btn.onclick = () => selectSin(sinName);
-          grid.appendChild(btn);
-        }
-      });
-    }
-
-    function copyReflection() {
-      if (!currentPassage) return;
-      navigator.clipboard.writeText(currentPassage);
-      alert('Reflexão copiada!');
-    }
-
-    // Gerenciador Local e do Firebase
-    let currentUser = null;
-    let auth = null;
-    let db = null;
-
-    try {
-      const firebaseConfig = {
-        apiKey: "AIzaSyCriuX-MW3MM4MZ1n-aLxH5XpK8tC9-TM",
-        authDomain: "reflexao-7-pecados.firebaseapp.com",
-        projectId: "reflexao-7-pecados",
-        storageBucket: "reflexao-7-pecados.firebasestorage.app",
-        messagingSenderId: "584317997328",
-        appId: "1:584317997328:web:bbc1bb477153575519595"
-      };
-
-      firebase.initializeApp(firebaseConfig);
-      auth = firebase.auth();
-      db = firebase.firestore();
-
-      auth.onAuthStateChanged(user => {
-        currentUser = user;
-        const statusText = document.getElementById('userStatus');
-        const loginBtn = document.getElementById('loginBtn');
-        if (user) {
-          statusText.innerText = user.email || "Conectado";
-          loginBtn.innerText = "Sair";
-          loginBtn.onclick = () => auth.signOut();
-        } else {
-          statusText.innerText = "Modo Offline / Local";
-          loginBtn.innerText = "🔑 Entrar";
-          loginBtn.onclick = openAuthModal;
-        }
-        loadJournal();
-      });
-    } catch (e) {
-      console.warn("Firebase não inicializado, usando modo local:", e);
-    }
-
-    function openAuthModal() { document.getElementById('authModal').style.display = 'flex'; }
-    function closeAuthModal() { document.getElementById('authModal').style.display = 'none'; }
-
-    function handleEmailLogin() {
-      if (!auth) return alert("Firebase não disponível no momento.");
-      const email = document.getElementById('authEmail').value;
-      const pass = document.getElementById('authPassword').value;
-      auth.signInWithEmailAndPassword(email, pass).then(() => closeAuthModal()).catch(e => alert(e.message));
-    }
-
-    function handleEmailSignUp() {
-      if (!auth) return alert("Firebase não disponível no momento.");
-      const email = document.getElementById('authEmail').value;
-      const pass = document.getElementById('authPassword').value;
-      auth.createUserWithEmailAndPassword(email, pass).then(() => closeAuthModal()).catch(e => alert(e.message));
-    }
-
-    function handleGoogleLogin() {
-      if (!auth) return alert("Firebase não disponível no momento.");
-      const provider = new firebase.auth.GoogleAuthProvider();
-      auth.signInWithPopup(provider).then(() => closeAuthModal()).catch(e => alert(e.message));
-    }
-
-    async function loadJournal() {
-      const list = document.getElementById('journalList');
-      list.innerHTML = '';
-      let items = [];
-
-      if (currentUser && db) {
-        try {
-          const snap = await db.collection('users').doc(currentUser.uid).collection('reflections').orderBy('timestamp', 'desc').get();
-          snap.forEach(doc => items.push({ id: doc.id, ...doc.data() }));
-        } catch(e) {
-          items = JSON.parse(localStorage.getItem('my_reflections') || '[]');
-        }
-      } else {
-        items = JSON.parse(localStorage.getItem('my_reflections') || '[]');
-      }
-
-      items.forEach((item, index) => {
-        const li = document.createElement('li');
-        li.className = 'journal-item';
-        li.innerHTML = `
-          <div>
-            <strong>${item.date}</strong> [${item.mood || '🕊️'}] — <span>${item.text}</span>
-          </div>
-          <button class="delete-btn" onclick="deleteJournalItem('${item.id || index}')">✕</button>
-        `;
-        list.appendChild(li);
-      });
-    }
-
-    async function addDailyLog() {
-      const date = document.getElementById('logDate').value;
-      const sin = document.getElementById('logSin').value;
-      const mood = document.getElementById('logMood').value;
-      if (!date) return alert('Por favor, selecione uma data.');
-
-      const entry = { date, text: `Registro: ${sin}`, mood, timestamp: Date.now() };
-
-      if (currentUser && db) {
-        await db.collection('users').doc(currentUser.uid).collection('reflections').add(entry);
-      } else {
-        const items = JSON.parse(localStorage.getItem('my_reflections') || '[]');
-        items.unshift(entry);
-        localStorage.setItem('my_reflections', JSON.stringify(items));
+        statusText.textContent = 'Modo local · privado';
+        loginBtn.textContent = 'Entrar';
+        loginBtn.onclick = openAuthModal;
       }
       loadJournal();
+    });
+  } catch(e){
+    console.warn('Firebase não inicializado, usando modo local:', e);
+  }
+
+  function openAuthModal(){
+    document.getElementById('authModal').style.display = 'flex';
+    document.getElementById('authEmail').focus();
+  }
+  function closeAuthModal(){
+    document.getElementById('authModal').style.display = 'none';
+  }
+
+  function setAuthBusy(busy){
+    ['authLoginBtn','authSignupBtn','authGoogleBtn'].forEach(id => {
+      document.getElementById(id).disabled = busy;
+    });
+  }
+
+  function handleEmailLogin(){
+    if(!auth) return showToast('Sincronização indisponível agora — use o modo local.');
+    const email = document.getElementById('authEmail').value.trim();
+    const pass = document.getElementById('authPassword').value;
+    if(!email || !pass) return showToast('Preencha e-mail e senha.');
+    setAuthBusy(true);
+    auth.signInWithEmailAndPassword(email, pass)
+      .then(() => { closeAuthModal(); showToast('Bem-vindo de volta.'); })
+      .catch(e => showToast(traduzErroAuth(e)))
+      .finally(() => setAuthBusy(false));
+  }
+
+  function handleEmailSignUp(){
+    if(!auth) return showToast('Sincronização indisponível agora — use o modo local.');
+    const email = document.getElementById('authEmail').value.trim();
+    const pass = document.getElementById('authPassword').value;
+    if(!email || !pass) return showToast('Preencha e-mail e senha.');
+    if(pass.length < 6) return showToast('A senha precisa ter pelo menos 6 caracteres.');
+    setAuthBusy(true);
+    auth.createUserWithEmailAndPassword(email, pass)
+      .then(() => { closeAuthModal(); showToast('Conta criada.'); })
+      .catch(e => showToast(traduzErroAuth(e)))
+      .finally(() => setAuthBusy(false));
+  }
+
+  function handleGoogleLogin(){
+    if(!auth) return showToast('Sincronização indisponível agora — use o modo local.');
+    const provider = new firebase.auth.GoogleAuthProvider();
+    setAuthBusy(true);
+    auth.signInWithPopup(provider)
+      .then(() => { closeAuthModal(); showToast('Bem-vindo.'); })
+      .catch(e => showToast(traduzErroAuth(e)))
+      .finally(() => setAuthBusy(false));
+  }
+
+  function traduzErroAuth(e){
+    const code = e && e.code ? e.code : '';
+    const map = {
+      'auth/wrong-password': 'Senha incorreta.',
+      'auth/user-not-found': 'Conta não encontrada.',
+      'auth/email-already-in-use': 'Este e-mail já está cadastrado.',
+      'auth/invalid-email': 'E-mail inválido.',
+      'auth/popup-closed-by-user': 'Login cancelado.'
+    };
+    return map[code] || 'Não foi possível concluir. Tente novamente.';
+  }
+
+  // ---------------------------------------------------------------
+  // Diário / registros
+  // ---------------------------------------------------------------
+  function localItems(){
+    return JSON.parse(localStorage.getItem('my_reflections') || '[]');
+  }
+  function saveLocalItems(items){
+    localStorage.setItem('my_reflections', JSON.stringify(items));
+  }
+
+  async function loadJournal(){
+    let items = [];
+    if(currentUser && db){
+      try{
+        const snap = await db.collection('users').doc(currentUser.uid)
+          .collection('reflections').orderBy('timestamp', 'desc').get();
+        snap.forEach(doc => items.push({ id: doc.id, ...doc.data() }));
+      } catch(e){
+        items = localItems();
+      }
+    } else {
+      items = localItems();
     }
+    renderJournal(items);
+    updateStreak(items);
+  }
 
-    async function saveCurrentBookmark() {
-      if (!currentPassage) return;
-      const today = new Date().toISOString().split('T')[0];
-      const mood = document.getElementById('logMood').value;
-      const entry = { date: today, text: `Passagem Salva: "${currentPassage.substring(0, 45)}..."`, mood, timestamp: Date.now() };
+  function renderJournal(items){
+    const list = document.getElementById('journalList');
+    const empty = document.getElementById('journalEmpty');
+    list.innerHTML = '';
+    empty.hidden = items.length > 0;
 
-      if (currentUser && db) {
+    items.forEach((item, index) => {
+      const li = document.createElement('li');
+      li.className = 'journal-item';
+      const moodEmoji = (item.mood || '').split(' ')[0] || '🕊️';
+      li.innerHTML = `
+        <div class="meta">
+          <span class="date">${formatDate(item.date)}</span>
+          <span class="text"><span class="mood">${moodEmoji}</span>${item.text}</span>
+        </div>
+      `;
+      const del = document.createElement('button');
+      del.className = 'delete-btn';
+      del.setAttribute('aria-label', 'Remover registro');
+      del.textContent = '✕';
+      del.onclick = () => askDeleteJournalItem(item.id || String(index));
+      li.appendChild(del);
+      list.appendChild(li);
+    });
+  }
+
+  function formatDate(iso){
+    if(!iso) return '';
+    const [y,m,d] = iso.split('-');
+    if(!y||!m||!d) return iso;
+    return `${d}/${m}/${y}`;
+  }
+
+  function updateStreak(items){
+    const badge = document.getElementById('streakBadge');
+    const dates = new Set(items.map(i => i.date).filter(Boolean));
+    if(dates.size === 0){ badge.hidden = true; return; }
+
+    let streak = 0;
+    let cursor = new Date();
+    while(true){
+      const iso = cursor.toISOString().split('T')[0];
+      if(dates.has(iso)){
+        streak++;
+        cursor.setDate(cursor.getDate() - 1);
+      } else break;
+    }
+    if(streak > 0){
+      badge.hidden = false;
+      badge.textContent = streak === 1 ? '1 dia seguido' : `${streak} dias seguidos`;
+    } else {
+      badge.hidden = true;
+    }
+  }
+
+  async function addDailyLog(){
+    const date = document.getElementById('logDate').value;
+    const sin = document.getElementById('logSin').value;
+    const mood = document.getElementById('logMood').value;
+    if(!date) return showToast('Escolha uma data.');
+
+    const entry = { date, text: `Registro: ${sin}`, mood, timestamp: Date.now() };
+    const btn = document.getElementById('addLogBtn');
+    btn.disabled = true;
+    try{
+      if(currentUser && db){
         await db.collection('users').doc(currentUser.uid).collection('reflections').add(entry);
       } else {
-        const items = JSON.parse(localStorage.getItem('my_reflections') || '[]');
+        const items = localItems();
         items.unshift(entry);
-        localStorage.setItem('my_reflections', JSON.stringify(items));
+        saveLocalItems(items);
       }
-      loadJournal();
-      alert('Reflexão guardada com sucesso!');
+      showToast('Dia registrado.');
+      await loadJournal();
+    } catch(e){
+      showToast('Não foi possível salvar. Tente novamente.');
+    } finally {
+      btn.disabled = false;
     }
+  }
 
-    async function deleteJournalItem(idOrIndex) {
-      if (currentUser && db) {
+  async function saveCurrentBookmark(){
+    if(!currentPassage) return;
+    const today = new Date().toISOString().split('T')[0];
+    const mood = document.getElementById('logMood').value;
+    const label = currentSinForBookmark ? `${currentSinForBookmark} — ` : '';
+    const entry = { date: today, text: `${label}"${currentPassage.substring(0, 60)}${currentPassage.length > 60 ? '…' : ''}"`, mood, timestamp: Date.now() };
+
+    try{
+      if(currentUser && db){
+        await db.collection('users').doc(currentUser.uid).collection('reflections').add(entry);
+      } else {
+        const items = localItems();
+        items.unshift(entry);
+        saveLocalItems(items);
+      }
+      showToast('Reflexão guardada.');
+      await loadJournal();
+    } catch(e){
+      showToast('Não foi possível guardar agora.');
+    }
+  }
+
+  function askDeleteJournalItem(idOrIndex){
+    pendingDeleteId = idOrIndex;
+    document.getElementById('confirmModal').style.display = 'flex';
+    document.getElementById('confirmYesBtn').onclick = confirmDeleteJournalItem;
+  }
+  function closeConfirmModal(){
+    document.getElementById('confirmModal').style.display = 'none';
+    pendingDeleteId = null;
+  }
+  async function confirmDeleteJournalItem(){
+    const idOrIndex = pendingDeleteId;
+    closeConfirmModal();
+    if(idOrIndex === null) return;
+    try{
+      if(currentUser && db){
         await db.collection('users').doc(currentUser.uid).collection('reflections').doc(idOrIndex).delete();
       } else {
-        const items = JSON.parse(localStorage.getItem('my_reflections') || '[]');
-        items.splice(idOrIndex, 1);
-        localStorage.setItem('my_reflections', JSON.stringify(items));
+        const items = localItems();
+        const idx = Number(idOrIndex);
+        items.splice(idx, 1);
+        saveLocalItems(items);
       }
-      loadJournal();
+      showToast('Registro removido.');
+      await loadJournal();
+    } catch(e){
+      showToast('Não foi possível remover.');
     }
+  }
 
-    // Inicialização
-    renderGrid();
-    loadJournal();
-    document.getElementById('logDate').value = new Date().toISOString().split('T')[0];
-  </script>
+  // fecha modais clicando fora ou com Esc
+  document.addEventListener('click', e => {
+    if(e.target.classList.contains('modal-overlay')){
+      e.target.style.display = 'none';
+    }
+  });
+  document.addEventListener('keydown', e => {
+    if(e.key === 'Escape'){
+      closeAuthModal();
+      closeConfirmModal();
+    }
+  });
+
+  // ---------------------------------------------------------------
+  // Inicialização
+  // ---------------------------------------------------------------
+  renderList('');
+  loadJournal();
+  document.getElementById('logDate').value = new Date().toISOString().split('T')[0];
+</script>
 </body>
-                                                             </html>
-                                                             
+  </html>
+  
